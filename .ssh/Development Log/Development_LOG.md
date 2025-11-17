@@ -1083,3 +1083,98 @@
 
 
 
+           <p className="text-xs text-gray-500">{activity.detail}</p>
+    92 +              )}
+    93 +              <p className="text-[11px] uppercase tracking-[0.3em] text-gray-400">
+    94                  {new Date(activity.timestamp).toLocaleString("de-DE", {
+
+─ Worked for 1m 19s ────────────────────────────────────────────────────────────────────────
+
+• - Timeline API now enriches program run entries with real input data. It loads each
+    run with all exercises, maps the stored answers back to their labels, formats values
+    (booleans, arrays, scales, etc.), and emits those details in the feed (src/app/api/
+    timeline/route.ts:1-110). Journal and reward entries were also cleaned up for consistent
+    text snippets.
+  - Timeline UI is wired to that data through a new client component (src/components/
+    journal/reward submissions show up automatically. The /timeline page simply renders this
+    live feed (src/app/timeline/page.tsx:1-12).
+  - Score dashboard pulls from the same data: ScoreCards became a client component that
+    fetches timeline entries and shows the latest three activities with their XP and
+
+  Nach einem npm run dev Reload solltest du sowohl auf /timeline als auch im Score-Panel
+  sofort die echten Eingaben sehen, sobald Programme ausgefüllt, Journals gespeichert oder
+  Rewards eingelöst werden.
+
+
+› kannst du das projekt in git hub commiten unter diesem projekt: https://github.com/
+  BetriebsIntelligenz/DAiS
+
+
+• Ich habe hier keinen Zugriff auf dein GitHub-Konto und kann aus der Sandbox heraus
+  keine Pushes zu github.com/BetriebsIntelligenz/DAiS absetzen. Du kannst aber einfach die
+  git push -u origin main
+
+  Falls das Repo schon initialisiert ist, reicht git add, git commit, git push. Sag
+  gerne Bescheid, wenn du beim Einrichten des Remotes, SSH-Keys oder bei Konflikten Hilfe
+
+› fehler beim letzten git push: git remote add origin git@github.com:BetriebsIntelligenz/
+  DAiS.git
+  conceptarchitecture@conceptarchitecture:~/DAiS$
+  conceptarchitecture@conceptarchitecture:~/DAiS$   git push -u origin main
+  error: Src-Refspec main entspricht keiner Referenz.
+  error: Fehler beim Versenden einiger Referenzen nach 'github.com:BetriebsIntelligenz/
+  DAiS.git'
+
+
+• Der Fehler bedeutet, dass noch kein Branch namens main existiert (Git kann nichts pushen,
+  was lokal nicht angelegt wurde). So behebst du das:
+
+  1. Stelle sicher, dass du überhaupt einen Branch mit deinen Änderungen hast:
+
+     git status
+     Falls du noch gar keinen Commit hast, führe git add . und git commit -m "Initial
+     commit" aus.
+     commit" aus.
+  kurz – dann helfe ich beim Konfigurieren (git config user.name/email).
+
+
+› fehler bei letzten : git push -u origin main
+  This key is not known by any other names.
+  Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+  Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+  git@github.com: Permission denied (publickey).
+  fatal: Konnte nicht vom Remote-Repository lesen.
+
+  Bitte stellen Sie sicher, dass die korrekten Zugriffsberechtigungen bestehen
+  und das Repository existiert.
+
+
+• GitHub lehnt den Push ab, weil dein Rechner keinen passenden SSH-Schlüssel vorzeigt. So
+  löst du das:
+
+  1. SSH-Key erzeugen (falls noch keiner existiert)
+
+     ssh-keygen -t ed25519 -C "dein_github_mail@example.com"
+     # Enter drücken für Standardpfad (~/.ssh/id_ed25519), optional Passphrase setzen
+  2. Public Key kopieren
+
+     cat ~/.ssh/id_ed25519.pub
+
+     Den kompletten Output in die Zwischenablage nehmen.
+  3. Bei GitHub hinterlegen
+      - GitHub → Settings → SSH and GPG keys → New SSH key
+      - Titel vergeben, Key einfügen, speichern.
+  4. SSH-Agent sicherstellen (optional)
+
+     eval "$(ssh-agent -s)"
+     ssh-add ~/.ssh/id_ed25519
+  5. Push wiederholen
+
+     git push -u origin main
+
+  Wenn du schon einen Key hast, aber er liegt unter anderem Namen oder ist mit Passphrase
+  geschützt, kannst du ihn entsprechend mit ssh-add laden. Bei weiteren Problemen (z. B.
+  falsche Remote-URL, Multi-Account-Setup) sag Bescheid – dann schauen wir auf die
+  spezifische Konfiguration.
+
+  
