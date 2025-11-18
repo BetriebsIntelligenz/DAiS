@@ -1177,4 +1177,1024 @@
   falsche Remote-URL, Multi-Account-Setup) sag Bescheid – dann schauen wir auf die
   spezifische Konfiguration.
 
-  
+
+─ Worked for 56s ───────────────────────────────────────────────────────────────────────────
+
+• Der Push scheiterte diesmal nicht an Berechtigungen, sondern an der Netzwerkanbindung –
+  die Sandbox konnte github.com nicht auflösen (Temporary failure in name resolution). Die
+  lokalen Schritte sind erledigt (Rebase inkl. README-Konflikt gelöst, Branch main, Commits
+  vorhanden). Bitte versuch den Push einfach noch einmal, sobald deine Verbindung wieder
+  Zugriff auf GitHub zulässt:
+
+  git push -u origin main
+
+  Wenn der DNS-Fehler bestehen bleibt, prüf deine Internetverbindung oder probiere es später
+  erneut. Sag Bescheid, falls dann weitere Probleme auftreten (z. B. erneute Konflikte oder
+  Auth-Errors); ich helfe gern weiter.
+
+
+    33 +        }))
+    34 +      );
+    35 +    };
+    36 +    load();
+    37 +  }, []);
+    38 +
+    39    return (
+
+• Edited ~/DAiS/src/components/score-cards.tsx (+31 -14)
+    62          </CardTitle>
+    63 -        <CardDescription>Beispiel-Metriken bis Live-Daten fließen.</CardDescription>
+    64 -        <ul className="mt-4 space-y-2 text-sm">
+    65 -          <li className="flex justify-between">
+    66 -            <span>MM1 Incantations</span>
+    67 -            <span className="font-semibold text-daisy-600">+600 XP</span>
+    68 -          </li>
+    69 -          <li className="flex justify-between">
+    70 -            <span>Daily Body Checklist</span>
+    71 -            <span className="font-semibold text-daisy-600">+550 XP</span>
+    72 -          </li>
+    73 -          <li className="flex justify-between">
+    74 -            <span>Reward: Kinoabend</span>
+    75 -            <span className="font-semibold text-pink-600">-1500 XP</span>
+    76 -          </li>
+    63 +        <CardDescription>
+    64 +          Zeigt direkt die letzten Programm-, Journal- oder Reward-Aktivitäten.
+    65 +        </CardDescription>
+    66 +        <ul className="mt-4 space-y-3 text-sm">
+    67 +          {activities.length === 0 && (
+    68 +            <li className="text-gray-500">Noch keine Aktivitäten vorhanden.</li>
+    69 +          )}
+    70 +          {activities.map((activity) => (
+    71 +            <li key={activity.id} className="flex flex-col gap-1">
+    72 +              <div className="flex justify-between">
+    73 +                <span className="font-semibold text-gray-900">
+    74 +                  {activity.title}
+    75 +                </span>
+    76 +                <span
+    77 +                  className={`font-semibold ${
+    78 +                    activity.xp.startsWith("-")
+    79 +                      ? "text-red-500"
+    80 +                      : "text-daisy-600"
+    81 +                  }`}
+    82 +                >
+    83 +                  {activity.xp}
+    84 +                </span>
+    85 +              </div>
+    86 +              <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
+    87 +                {new Date(activity.timestamp).toLocaleString("de-DE", {
+    88 +                  dateStyle: "short",
+    89 +                  timeStyle: "short"
+    90 +                })}
+    91 +              </p>
+    92 +            </li>
+    93 +          ))}
+    94          </ul>
+
+• Edited ~/DAiS/src/components/score-cards.tsx (+9 -2)
+    17    timestamp: string;
+    18 +  detail?: string;
+    19  }
+       ⋮
+    32            xp: entry.xp,
+    32 -          timestamp: entry.timestamp
+    33 +          timestamp: entry.timestamp,
+    34 +          detail: Array.isArray((entry as any).details)
+    35 +            ? (entry as any).details[0]
+    36 +            : undefined
+    37          }))
+       ⋮
+    89                </div>
+    86 -              <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
+    90 +              {activity.detail && (
+    91 +                <p className="text-xs text-gray-500">{activity.detail}</p>
+    92 +              )}
+    93 +              <p className="text-[11px] uppercase tracking-[0.3em] text-gray-400">
+    94                  {new Date(activity.timestamp).toLocaleString("de-DE", {
+
+─ Worked for 1m 19s ────────────────────────────────────────────────────────────────────────
+
+• - Timeline API now enriches program run entries with real input data. It loads each
+    run with all exercises, maps the stored answers back to their labels, formats values
+    (booleans, arrays, scales, etc.), and emits those details in the feed (src/app/api/
+    timeline/route.ts:1-110). Journal and reward entries were also cleaned up for consistent
+    text snippets.
+  - Timeline UI is wired to that data through a new client component (src/components/
+    journal/reward submissions show up automatically. The /timeline page simply renders this
+    live feed (src/app/timeline/page.tsx:1-12).
+  - Score dashboard pulls from the same data: ScoreCards became a client component that
+    fetches timeline entries and shows the latest three activities with their XP and
+
+  Nach einem npm run dev Reload solltest du sowohl auf /timeline als auch im Score-Panel
+  sofort die echten Eingaben sehen, sobald Programme ausgefüllt, Journals gespeichert oder
+  Rewards eingelöst werden.
+
+
+› kannst du das projekt in git hub commiten unter diesem projekt: https://github.com/
+  BetriebsIntelligenz/DAiS
+
+
+• Ich habe hier keinen Zugriff auf dein GitHub-Konto und kann aus der Sandbox heraus
+  keine Pushes zu github.com/BetriebsIntelligenz/DAiS absetzen. Du kannst aber einfach die
+  git push -u origin main
+
+  Falls das Repo schon initialisiert ist, reicht git add, git commit, git push. Sag
+  gerne Bescheid, wenn du beim Einrichten des Remotes, SSH-Keys oder bei Konflikten Hilfe
+
+› fehler beim letzten git push: git remote add origin git@github.com:BetriebsIntelligenz/
+  DAiS.git
+  conceptarchitecture@conceptarchitecture:~/DAiS$
+  conceptarchitecture@conceptarchitecture:~/DAiS$   git push -u origin main
+  error: Src-Refspec main entspricht keiner Referenz.
+  error: Fehler beim Versenden einiger Referenzen nach 'github.com:BetriebsIntelligenz/
+  DAiS.git'
+
+
+• Der Fehler bedeutet, dass noch kein Branch namens main existiert (Git kann nichts pushen,
+  was lokal nicht angelegt wurde). So behebst du das:
+
+  1. Stelle sicher, dass du überhaupt einen Branch mit deinen Änderungen hast:
+
+     git status
+     Falls du noch gar keinen Commit hast, führe git add . und git commit -m "Initial
+     commit" aus.
+     commit" aus.
+  kurz – dann helfe ich beim Konfigurieren (git config user.name/email).
+
+
+› fehler bei letzten : git push -u origin main
+  This key is not known by any other names.
+  Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+  Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+  git@github.com: Permission denied (publickey).
+  fatal: Konnte nicht vom Remote-Repository lesen.
+
+  Bitte stellen Sie sicher, dass die korrekten Zugriffsberechtigungen bestehen
+  und das Repository existiert.
+
+
+• GitHub lehnt den Push ab, weil dein Rechner keinen passenden SSH-Schlüssel vorzeigt. So
+  löst du das:
+
+  1. SSH-Key erzeugen (falls noch keiner existiert)
+
+     ssh-keygen -t ed25519 -C "dein_github_mail@example.com"
+     # Enter drücken für Standardpfad (~/.ssh/id_ed25519), optional Passphrase setzen
+  2. Public Key kopieren
+
+     cat ~/.ssh/id_ed25519.pub
+
+     Den kompletten Output in die Zwischenablage nehmen.
+  3. Bei GitHub hinterlegen
+      - GitHub → Settings → SSH and GPG keys → New SSH key
+      - Titel vergeben, Key einfügen, speichern.
+  4. SSH-Agent sicherstellen (optional)
+
+
+
+› fehler:
+  conceptarchitecture@conceptarchitecture:~/DAiS$      git push -u origin main
+  error: Fehler beim Versenden einiger Referenzen nach 'github.com:BetriebsIntelligenz/
+  DAiS.git'
+  Hinweis: Updates were rejected because the remote contains work that you do not
+  Hinweis: have locally. This is usually caused by another repository pushing to
+  Hinweis: the same ref. If you want to integrate the remote changes, use
+  Hinweis: 'git pull' before pushing again.
+  Hinweis: See the 'Note about fast-forwards' in 'git push --help' for details.
+  conceptarchitecture@conceptarchitecture:~/DAiS$
+
+
+• Der Push wurde abgelehnt, weil auf GitHub bereits Commits liegen, die dir lokal fehlen. Du
+  musst zuerst den Remote-Stand einholen und ggf. mergen:
+
+  1. Hol den Remote-Stand:
+
+     git pull origin main --rebase
+     (Falls du schon lokale Commits hast, macht --rebase die Historie sauberer; bei
+
+     git push -u origin main
+
+  Falls git pull --rebase mit vielen Konflikten stirbt und du lieber neu anfangen willst,
+  der übliche Weg ist: Pull → Konflikte lösen → Push. Sag Bescheid, wenn beim Rebase ein
+  Konflikt auftaucht; dann helfe ich beim Auflösen.
+
+
+› DAiS$ git pull origin main --rebase
+  error: Pull mit Rebase nicht möglich: Sie haben Änderungen, die nicht zum Commit
+  vorgemerkt sind.
+  error: Bitte committen Sie die Änderungen oder benutzen Sie "stash".
+
+
+• Git weigert sich zu pullen, weil du unstaged/uncommitted Änderungen hast. Vorgehen:
+
+  1. Prüfe, was geändert ist:
+
+     git status
+  2. Entweder alles committen:
+
+     git add .
+     git commit -m "Dein Commit-Text"
+
+     oder, falls du die Änderungen später wieder auspacken willst, temporär stashen:
+
+     git stash push -m "work in progress"
+  3. Danach erneut:
+
+     git pull origin main --rebase
+  4. Wenn du gestasht hast, anschließend mit git stash pop zurückholen.
+
+  Sag Bescheid, wenn beim Committen/Stashen oder beim folgenden Pull etwas hakt.
+
+
+› S$
+  conceptarchitecture@conceptarchitecture:~/DAiS$ git pull origin main --rebase
+  remote: Enumerating objects: 4, done.
+  remote: Counting objects: 100% (4/4), done.
+  remote: Compressing objects: 100% (3/3), done.
+  remote: Total 4 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+  Entpacke Objekte: 100% (4/4), 1.50 KiB | 1.50 MiB/s, fertig.
+  Von github.com:BetriebsIntelligenz/DAiS
+   * branch            main       -> FETCH_HEAD
+   * [neuer Branch]    main       -> origin/main
+  automatischer Merge von README.md
+  Hinweis: You can instead skip this commit: run "git rebase --skip".
+  Hinweis: To abort and get back to the state before "git rebase", run "git rebase
+  --abort".
+  Konnte cee9968... (Implement DAiS app with redesigned UI and timeline feed) nicht
+  anwenden
+
+
+• Explored
+  └ Read README.md
+
+• Ran git show origin/main:README.md
+  └ # DAiS
+
+     2 -# DAiS
+     3 -=======
+     1  # DAiS App
+       ⋮
+    29  Weitere Details siehe `docs/LOCAL_TESTING.md`. Falls du Daten manuell einspielen wil
+
+    A  .env.example
+    … +63 lines
+    A  tailwind.config.ts
+    A  tsconfig.json
+  └ (no output)
+
+• Ran git rebase --continue
+>Standardeingabe ist kein Terminalilen gelesen ](B
+    error: There was a problem with the editor 'editor'.
+
+     66 files changed, 4812 insertions(+), 1 deletion(-)
+    … +64 lines
+     create mode 100644 tsconfig.json
+Erfolgreich Rebase ausgeführt und refs/heads/main aktualisiert.
+
+• Ran git status -sb
+  └ ## main
+
+• Ran git push -u origin main
+  └ ssh: Could not resolve hostname github.com: Temporary failure in name resolution
+    fatal: Konnte nicht vom Remote-Repository lesen.
+
+    Bitte stellen Sie sicher, dass die korrekten Zugriffsberechtigungen bestehen
+    und das Repository existiert.
+
+─ Worked for 56s ───────────────────────────────────────────────────────────────────────────
+
+  lokalen Schritte sind erledigt (Rebase inkl. README-Konflikt gelöst, Branch main, Commits
+  vorhanden). Bitte versuch den Push einfach noch einmal, sobald deine Verbindung wieder
+  Zugriff auf GitHub zulässt:
+
+  Wenn der DNS-Fehler bestehen bleibt, prüf deine Internetverbindung oder probiere es später
+  erneut. Sag Bescheid, falls dann weitere Probleme auftreten (z. B. erneute Konflikte oder
+  Auth-Errors); ich helfe gern weiter.
+
+
+
+
+• I’m updating the MenuCard component to show category titles and matching icons in the top gradient area, using
+  lucide-react icons mapped by category name. I’ll adjust the layout to include the icon and text together,
+  pulling icon info from the categories data or mapping it inside the component, and making sure the top section
+  stands out with the required styling.
+
+• Explored
+  └ Read menu-card.tsx
+
+• Edited src/components/menu-card.tsx (+34 -12)
+     1  import Link from "next/link";
+     2 -import { ArrowRight } from "lucide-react";
+     2 +import {
+     3 +  ArrowRight,
+     4 +  Brain,
+     5 +  Activity,
+     6 +  Users2,
+     7 +  Leaf,
+     8 +  Briefcase,
+     9 +  Sparkles
+    10 +} from "lucide-react";
+    11
+       ⋮
+    22
+    23 +const iconMap: Record<string, React.ReactNode> = {
+    24 +  mind: <Brain className="h-8 w-8" />,
+    25 +  body: <Activity className="h-8 w-8" />,
+    26 +  human: <Users2 className="h-8 w-8" />,
+    27 +  environment: <Leaf className="h-8 w-8" />,
+    28 +  business: <Briefcase className="h-8 w-8" />
+    29 +};
+    30 +
+    31  export function MenuCard({
+       ⋮
+    37  }: MenuCardProps) {
+    38 +  const icon = iconMap[title.toLowerCase()] ?? (
+    39 +    <Sparkles className="h-8 w-8" />
+    40 +  );
+    41 +
+    42    return (
+       ⋮
+    49        >
+    30 -        <div className="card-gradient h-24 w-full rounded-t-[28px]" />
+    31 -        <div className="-mt-10 space-y-4 rounded-[28px] bg-white p-5">
+    32 -          <div className="flex items-center justify-between">
+    33 -            <div>
+    34 -              <p className="text-xs uppercase tracking-[0.3em] text-daisy-500">
+    35 -                {chips[0] ?? "FLOW"}
+    36 -              </p>
+    37 -              <h3 className="mt-1 text-2xl font-semibold">{title}</h3>
+    38 -              <p className="text-sm text-gray-500">{description}</p>
+    39 -            </div>
+    40 -            <ArrowRight className="h-5 w-5 text-daisy-500" />
+    50 +        <div className="card-gradient flex h-28 w-full items-center justify-between rounded-t-[28px] px-5
+         text-white">
+    51 +          <div>
+    52 +            <p className="text-xs uppercase tracking-[0.4em] text-white/80">
+    53 +              Kategorie
+    54 +            </p>
+    55 +            <h3 className="text-2xl font-semibold">{title}</h3>
+    56            </div>
+    57 +          <div className="rounded-2xl bg-white/15 p-3 text-white">{icon}</div>
+    58 +        </div>
+    59 +        <div className="-mt-8 space-y-4 rounded-[28px] bg-white p-5">
+    60 +          <p className="text-sm text-gray-600">{description}</p>
+    61            <div className="flex flex-wrap gap-2">
+       ⋮
+    70            </div>
+    71 +          <div className="flex items-center justify-end text-daisy-600">
+    72 +            <ArrowRight className="h-5 w-5" />
+    73 +          </div>
+    74          </div>
+─ Worked for 49s ────────────────────────────────────────────────────────────────────────────────────────────────
+
+• - Über den Menü-Karten steht jetzt direkt im gelben Headerbereich der Kategoriename in Weiß, ergänzt um ein
+    passendes Icon (Mind=🧠, Body=Activity usw.). Dazu wurde src/components/menu-card.tsx:1-74 überarbeitet: die
+  Bescheid, wenn du andere Symbole/Farben bevorzugst.
+
+
+› bei /score letzte aktivitäten soll es unten in der box ein dropdown button geben "Alle Anzeigen" der immer die
+  letzten 100 aktivitäten lädt und anzeigt
+
+
+• Explored
+  └ Read route.ts
+
+• Edited src/app/api/timeline/route.ts (+9 -5)
+      8
+      9 -export async function GET() {
+      9 +export async function GET(request: Request) {
+     10 +  const { searchParams } = new URL(request.url);
+     11 +  const limit = Number(searchParams.get("limit")) || 30;
+     12 +  const maxLimit = Math.min(limit, 100);
+     13 +
+     14    const [programRuns, journalEntries, rewardRedemptions] = await Promise.all([
+        ⋮
+     27        orderBy: { createdAt: "desc" },
+     24 -      take: 25
+     28 +      take: maxLimit
+     29      }),
+        ⋮
+     32        orderBy: { createdAt: "desc" },
+     29 -      take: 25
+     33 +      take: maxLimit
+     34      }),
+        ⋮
+     37        orderBy: { requestedAt: "desc" },
+     34 -      take: 25
+     38 +      take: maxLimit
+     39      })
+        ⋮
+    132      )
+    129 -    .slice(0, 30);
+    133 +    .slice(0, maxLimit);
+    134
+
+• Edited src/components/score-cards.tsx (+12 -2)
+     22    const [activities, setActivities] = useState<TimelineSnippet[]>([]);
+     23 +  const [showAll, setShowAll] = useState(false);
+     24
+        ⋮
+     29        setActivities(
+     29 -        (data.entries as TimelineSnippet[]).slice(0, 3).map((entry) => ({
+     30 +        ((data.entries as TimelineSnippet[]) || []).map((entry) => ({
+     31            id: entry.id,
+        ⋮
+     74            )}
+     74 -          {activities.map((activity) => (
+     75 +          {(showAll ? activities.slice(0, 100) : activities.slice(0, 3)).map((activity) => (
+     76              <li key={activity.id} className="flex flex-col gap-1">
+        ⋮
+    102          </ul>
+    103 +        {activities.length > 3 && (
+    104 +          <button
+    105 +            type="button"
+    106 +            onClick={() => setShowAll((prev) => !prev)}
+    107 +            className="mt-4 w-full rounded-full border border-daisy-200 py-2 text-sm font-semibold text-
+         daisy-600"
+    108 +          >
+    109 +            {showAll ? "Weniger anzeigen" : "Alle anzeigen"}
+    110 +          </button>
+    111 +        )}
+    112        </Card>
+
+
+• - Timeline-API akzeptiert jetzt einen limit Parameter (max. 100) und gibt entsprechend viele Einträge zurück
+    (src/app/api/timeline/route.ts:6-78), damit lange Listen geladen werden können.
+  - ScoreCards lädt weiterhin die Timeline, zeigt aber standardmäßig nur drei Einträge. Über den neuen Button
+
+  Bitte npm run dev neu starten bzw. /score aktualisieren. Du solltest den Button unter „Letzte Aktivitäten“
+  sehen, der bei Bedarf die lange Liste öffnet. Sag Bescheid, wenn der Button anders aussehen oder per Modal/
+  Drawer gelöst werden soll.
+
+
+› ändere noch folgendes, bei abgabe eines programms (http://localhost:3001/programs/mm1-incantations) soll die
+  ansicht http://localhost:3001/ wieder geladen  werden
+
+
+• Edited src/components/program-form.tsx (+3 -0)
+     3  import { useMemo } from "react";
+     4 +import { useRouter } from "next/navigation";
+     5  import { useForm, type UseFormRegister } from "react-hook-form";
+       ⋮
+    45    const schema = useMemo(() => buildSchema(exercises), [exercises]);
+    46 +  const router = useRouter();
+    47    const form = useForm<z.infer<typeof schema>>({
+       ⋮
+    62      alert("Programmlauf gespeichert und XP gutgeschrieben 🚀");
+    63 +    router.push("/?programCompleted=true");
+    64    });
+
+
+› ändere noch das nicht mehr ok bei der meldung im browser gelickt werden muss wenn man ein problem durhcführt.
+  es soll nur die nächste seite laden und für paar sekunden eine success meldung angezeigt werden
+
+  │ from PIL import Image, ImageDraw
+  │ img = Image.open('DAIS_Logo.png')
+  │ … +2 lines
+  └ RGBA
+
+• Ran python3 - <<'PY'
+  │ from PIL import Image
+  │ img = Image.open('DAIS_Logo.png').convert('RGBA')
+  │ … +11 lines
+  └ (no output)
+
+• I’m planning to replace the alert in ProgramForm with a router push that adds a query param signaling success.
+  Then, the home page will read this param and pass a success message down to MobileShell, which will render a
+  new client-side SuccessToast component that shows the message briefly before fading away. This avoids alerts
+  and keeps MobileShell mostly server-side while still showing dynamic UI feedback. I'll also handle cleaning up
+  the query param after showing the banner for a smooth user experience.
+
+• Edited src/components/program-form.tsx (+1 -2)
+    61      form.reset();
+    62 -    alert("Programmlauf gespeichert und XP gutgeschrieben 🚀");
+    63 -    router.push("/?programCompleted=true");
+    62 +    router.push(`/?programCompleted=${encodeURIComponent(program.name)}`);
+    63    });
+
+• Added src/components/success-toast.tsx (+36 -0)
+     1 +"use client";
+     2 +
+     3 +import { useEffect, useState } from "react";
+     4 +import { CheckCircle2 } from "lucide-react";
+     5 +
+     6 +interface SuccessToastProps {
+     7 +  message?: string;
+     8 +  duration?: number;
+     9 +}
+    10 +
+    11 +export function SuccessToast({
+    12 +  message,
+    13 +  duration = 4000
+    14 +}: SuccessToastProps) {
+    15 +  const [visible, setVisible] = useState(Boolean(message));
+    16 +
+    17 +  useEffect(() => {
+    18 +    if (!message) return;
+    19 +    setVisible(true);
+    20 +    const timer = setTimeout(() => setVisible(false), duration);
+    21 +    return () => clearTimeout(timer);
+    22 +  }, [message, duration]);
+    23 +
+    24 +  if (!message || !visible) {
+    25 +    return null;
+    26 +  }
+    27 +
+    28 +  return (
+    29 +    <div className="rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-daisy-700 shadow-card">
+    30 +      <span className="mr-2 inline-flex items-center justify-center rounded-full bg-daisy-500 px-2 py-1 t
+        ext-white">
+    31 +        <CheckCircle2 className="h-4 w-4" />
+    32 +      </span>
+    33 +      {message}
+    34 +    </div>
+    35 +  );
+    36 +}
+
+• Edited src/components/mobile-shell.tsx (+9 -1)
+     9  } from "lucide-react";
+    10 +import { SuccessToast } from "./success-toast";
+    11
+       ⋮
+    14    description,
+    14 -  children
+    15 +  children,
+    16 +  successMessage
+    17  }: {
+       ⋮
+    20    children: React.ReactNode;
+    21 +  successMessage?: string;
+    22  }) {
+       ⋮
+    27          <div className="space-y-5">
+    28 +          {successMessage && (
+    29 +            <div className="flex justify-center">
+    30 +              <SuccessToast message={successMessage} />
+    31 +            </div>
+    32 +          )}
+    33            <div className="rounded-[36px] bg-gradient-to-b from-daisy-400 via-daisy-300 to-daisy-200 p-6 t
+        ext-white shadow-soft">
+
+• Edited src/app/page.tsx (+12 -1)
+     4
+     5 -export default function HomePage() {
+     5 +export default function HomePage({
+     6 +  searchParams
+     7 +}: {
+     8 +  searchParams: Record<string, string | string[] | undefined>;
+     9 +}) {
+    10 +  const completedProgram = searchParams?.programCompleted;
+    11 +  const successMessage =
+    12 +    typeof completedProgram === "string"
+    13 +      ? `${completedProgram} erfolgreich abgeschlossen! XP gutgeschrieben.`
+    14 +      : undefined;
+    15 +
+    16    return (
+       ⋮
+    19        description="Wähle eine Kategorie (Mind, Body, Human, Environment, Business) um mit dem nächsten Fl
+        ow zu starten."
+    20 +      successMessage={successMessage}
+    21      >
+
+• I'm sorting out how to hide the success message properly and whether to remove the query param to prevent
+  unnecessary rerenders; using router replace to reload the home page after completion seems ideal. I'm also
+  updating the ScoreCards component to fetch the last 100 timeline entries instead of the default 30 per the
+  requirement, making sure fetch calls include the right limit parameter.
+
+• Edited src/components/score-cards.tsx (+1 -1)
+    26      const load = async () => {
+    27 -      const response = await fetch("/api/timeline");
+    27 +      const response = await fetch("/api/timeline?limit=100");
+    28        const data = await response.json();
+
+─ Worked for 1m 25s ─────────────────────────────────────────────────────────────────────────────────────────────
+
+• - Program submission now routes straight back to the home screen without a blocking alert (src/components/
+    program-form.tsx:44-65). After saving, it navigates to /?programCompleted=<Name>.
+  - The home page reads that query param and passes a success message into MobileShell, which renders a new
+  Damit brauchst du beim Abschließen eines Programms keinen OK-Klick mehr, und die Startseite zeigt kurz eine
+  Erfolgsmeldung an, während /score auf Wunsch deutlich mehr Aktivitäten lädt.
+
+
+› optimiere noch bei den boxen "Mind".. dass die box unterhalb des textes etwas anbstand zum text hat
+
+
+• Explored
+  └ Read menu-card.tsx
+
+• Edited src/components/menu-card.tsx (+1 -1)
+    58          </div>
+    59 -        <div className="-mt-8 space-y-4 rounded-[28px] bg-white p-5">
+    59 +        <div className="-mt-5 space-y-4 rounded-[28px] bg-white p-5">
+    60            <p className="text-sm text-gray-600">{description}</p>
+
+  bevorzugst.
+
+
+› bei rewards noch bitte den aktuellen punkte stand des users anzeigen, schön groß geschmückt und leicht
+  animiert
+
+
+• Explored
+  └ Read page.tsx, rewards-grid.tsx
+
+• Edited src/components/rewards-grid.tsx (+15 -0)
+    26    const [redemptions, setRedemptions] = useState<Redemption[]>([]);
+    27 +  const [xpBalance, setXpBalance] = useState<number>(0);
+    28
+       ⋮
+    33      setRedemptions(data.redemptions);
+    34 +    setXpBalance(data.balance ?? 0);
+    35    }, []);
+       ⋮
+    62      <div className="space-y-10">
+    63 +      <div className="rounded-[30px] bg-gradient-to-r from-daisy-200 via-daisy-300 to-daisy-400 p-6 text-
+        white shadow-soft">
+    64 +        <p className="text-sm uppercase tracking-[0.4em] text-white/70">
+    65 +          Aktuelle Punkte
+    66 +        </p>
+    67 +        <div className="mt-2 flex items-end gap-4">
+    71 +          <span className="animate-pulse text-xs uppercase tracking-[0.4em]">
+    72 +            ready
+    73 +          </span>
+    74 +        </div>
+    75 +      </div>
+    76        <div className="grid gap-4 sm:grid-cols-2">
+
+• Explored
+  └ Read route.ts
+
+• Edited src/app/api/rewards/route.ts (+8 -2)
+     5  export async function GET() {
+     6 -  const [rewards, redemptions] = await Promise.all([
+     6 +  const [rewards, redemptions, balanceRaw] = await Promise.all([
+     7      prisma.reward.findMany({
+       ⋮
+    13        take: 20
+    14 +    }),
+    15 +    prisma.xpTransaction.aggregate({
+    16 +      where: { userId: { not: undefined } },
+    17 +      _sum: { amount: true }
+    18      })
+       ⋮
+    20
+    17 -  return NextResponse.json({ rewards, redemptions });
+    21 +  const balance = balanceRaw._sum.amount ?? 0;
+    22 +
+    23 +  return NextResponse.json({ rewards, redemptions, balance });
+    24  }
+
+─ Worked for 45s ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  - Rewards UI hat eine neue Gradient-Karte ganz oben, die den Kontostand groß und animiert anzeigt (src/
+    components/rewards-grid.tsx:1-47). Der Wert kommt direkt aus data.balance.
+
+  Nach npm run dev/Refresh erscheint die Punkteanzeige über den Reward-Karten. Sag Bescheid, falls du statt der
+  Gesamtbilanz einen per-User-Filter oder eine besondere Typo/Farbgebung brauchst.
+
+
+› bei belohnungen werden die fertig gestellten programme nicht die xp punkte hinzugefügt. korrigiere das
+
+
+• I'm figuring out why completed programs don't add XP points to balances, suspecting inconsistent userId
+  usage in XP transactions and aggregation. I'll update the rewards API to fetch and sum XP for a specific
+  user—defaulting to a demo user via a helper—and fix the aggregation logic to ensure accuracy by filtering
+  transactions properly.
+
+• Edited src/app/api/rewards/route.ts (+4 -1)
+     3  import { prisma } from "@/lib/prisma";
+     4 +import { getOrCreateDemoUser } from "@/lib/demo-user";
+     5
+     6  export async function GET() {
+     7 +  const user = await getOrCreateDemoUser();
+     8 +
+     9    const [rewards, redemptions, balanceRaw] = await Promise.all([
+       ⋮
+    18      prisma.xpTransaction.aggregate({
+    16 -      where: { userId: { not: undefined } },
+    19 +      where: { userId: user.id },
+    20        _sum: { amount: true }
+
+─ Worked for 17s ────────────────────────────────────────────────────────────────────────────────────────────────
+
+• XP-Gutschriften der Programme fließen jetzt auch in den Reward-Kontostand ein: Der Rewards-API-Endpunkt
+  ermittelt zuerst den Demo-User und summiert anschließend nur dessen Transaktionen (src/app/api/rewards/
+  route.ts:1-25). Dadurch berücksichtigen die oben angezeigten Punkte sowohl Earns aus Programmen als auch
+  Spends durch Rewards. Bitte /rewards neu laden und nach einem Programmabschluss erneut prüfen – der Wert sollte
+  unmittelbar steigen. Sag Bescheid, falls du mehrere User oder Filter brauchst.
+
+
+› bei absenden eines fertigen programs kommt folgende fehlermeldung: vendors.bundle.js:2 Download the React
+  DevTools for a better development experience: https://reactjs.org/link/react-devtools
+  main-app.js?v=1763422627944:1825 Download the React DevTools for a better development experience: https://
+  reactjs.org/link/react-devtools
+  program-form.tsx:53  POST http://localhost:3001/api/program-runs 404 (Not Found)
+  eval @ program-form.tsx:53
+  eval @ index.esm.mjs:2142
+  await in eval
+  callCallback @ react-dom.development.js:20565
+  invokeGuardedCallbackImpl @ react-dom.development.js:20614
+  invokeGuardedCallback @ react-dom.development.js:20689
+  invokeGuardedCallbackAndCatchFirstError @ react-dom.development.js:20703
+  processDispatchQueue @ react-dom.development.js:32173
+  dispatchEventsForPlugins @ react-dom.development.js:32184
+  eval @ react-dom.development.js:32374
+  batchedUpdates$1 @ react-dom.development.js:24953
+  batchedUpdates @ react-dom.development.js:28844
+  dispatchEventForPluginEventSystem @ react-dom.development.js:32373
+  dispatchEvent @ react-dom.development.js:30141
+  dispatchDiscreteEvent @ react-dom.development.js:30112
+
+
+• POST /api/program-runs landet mit 404, weil Next keine API-Route unter http://localhost:3001/api/program-runs
+  kennt – entweder läuft der Dev-Server noch auf 3000 oder es läuft eine ältere Build ohne src/app/api/program-
+  runs/route.ts. Bitte prüfe kurz:
+
+  1. Server-Port checken: npm run dev startet standardmäßig auf 3000. Wenn du auf 3001 surfst, läuft dort
+     vermutlich eine andere Instanz/Proxy ohne API-Routes. Öffne http://localhost:3000/api/program-runs im
+     Browser: wenn „method not allowed“ erscheint, ist die Route da; wenn 404, läuft der Build ohne API.
+  2. Dev-Server neu starten: Falls du nach dem Erstellen der API-Datei keinen Neustart gemacht hast, musst du npm
+     run dev stoppen und erneut starten (Next pickt App-Router-APIs nur beim Starten auf).
+     dort die API weiter.
+  runs Route muss im Build landen (Server neu starten). Danach verschwindet der 404 und Programme lassen sich
+  speichern. Sag Bescheid, falls es nach dem Restart weiter scheitert oder du Logs brauchst.
+
+
+report the issue.
+
+
+› ich habe port 3001 in verwendung. passe es an dass es funktioniert. implementiere dazu auch folgende sachen:
+  implementtiere einen user login bei aufruf der seite. zudem soll wenn man eingelogt ist oben rechts ein user
+  icon sein, wenn man auf ihn klickt kommt log off button.
+
+
+• I'm planning to add a basic client-side login overlay using React context and localStorage to store user info,
+  wrapping the entire app with an AuthGate component to require login on page load. I'll create an AuthGate to
+  manage auth state and a UserMenu client component to show a user icon with logout in the header, integrating
+  both into the layout and MobileShell. I'll keep authentication minimal with static credentials and focus on
+  smooth UX with overlay and context provision.
+
+• Added src/components/auth-gate.tsx (+140 -0)
+      1 +"use client";
+      2 +
+      3 +import {
+      4 +  createContext,
+      5 +  useContext,
+      6 +  useEffect,
+      7 +  useMemo,
+      8 +  useState
+      9 +} from "react";
+     10 +
+     11 +interface AuthUser {
+     12 +  name: string;
+     13 +  email: string;
+     14 +}
+     15 +
+     16 +interface AuthContextValue {
+     17 +  user: AuthUser | null;
+     18 +  logout: () => void;
+     19 +}
+     20 +
+     21 +const AuthContext = createContext<AuthContextValue>({
+     22 +  user: null,
+     23 +  logout: () => undefined
+     24 +});
+     25 +
+     26 +export function useAuth() {
+     27 +  return useContext(AuthContext);
+     28 +}
+     29 +
+     30 +export function AuthGate({ children }: { children: React.ReactNode }) {
+     31 +  const [user, setUser] = useState<AuthUser | null>(null);
+     32 +  const [loading, setLoading] = useState(true);
+     33 +  const [error, setError] = useState<string | null>(null);
+     34 +
+     35 +  useEffect(() => {
+     36 +    const stored = typeof window !== "undefined" ? localStorage.getItem("daisUser") : null;
+     37 +    if (stored) {
+     38 +      try {
+     39 +        setUser(JSON.parse(stored));
+     40 +      } catch {
+     41 +        localStorage.removeItem("daisUser");
+     42 +      }
+     43 +    }
+     44 +    setLoading(false);
+     45 +  }, []);
+     46 +
+     47 +  const logout = () => {
+     48 +    localStorage.removeItem("daisUser");
+     49 +    setUser(null);
+     50 +  };
+     51 +
+     52 +  const contextValue = useMemo(
+     53 +    () => ({
+     54 +      user,
+     55 +      logout
+     56 +    }),
+     57 +    [user]
+     58 +  );
+     59 +
+     60 +  const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
+     61 +    event.preventDefault();
+     62 +    const form = event.currentTarget;
+     63 +    const name = (form.elements.namedItem("name") as HTMLInputElement)?.value;
+     64 +    const email = (form.elements.namedItem("email") as HTMLInputElement)?.value;
+     65 +    const password = (form.elements.namedItem("password") as HTMLInputElement)?.value;
+     66 +
+     67 +    if (!name || !email || !password) {
+     68 +      setError("Bitte alle Felder ausfüllen.");
+     69 +      return;
+     70 +    }
+     71 +    if (password !== "dais2025") {
+     72 +      setError("Kennwort ist ungültig.");
+     73 +      return;
+     74 +    }
+     75 +
+     76 +    const authUser: AuthUser = { name, email };
+     77 +    localStorage.setItem("daisUser", JSON.stringify(authUser));
+     78 +    setUser(authUser);
+     79 +    setError(null);
+     80 +  };
+     81 +
+     82 +  if (loading) {
+     83 +    return (
+     84 +      <div className="flex min-h-screen items-center justify-center bg-[#fff4d6]">
+     85 +        <p className="text-sm font-semibold text-daisy-700">DAiS lädt…</p>
+     86 +      </div>
+     87 +    );
+     88 +  }
+     89 +
+     90 +  if (!user) {
+     91 +    return (
+     92 +      <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-daisy-200 to-w
+         hite px-6">
+     93 +        <form
+     94 +          onSubmit={handleLogin}
+     95 +          className="w-full max-w-sm space-y-4 rounded-[32px] bg-white p-8 text-gray-900 shadow-soft"
+     96 +        >
+     97 +          <header className="space-y-1 text-center">
+     98 +            <p className="text-xs uppercase tracking-[0.4em] text-daisy-500">
+     99 +              DAiS Zugang
+    100 +            </p>
+    101 +            <h1 className="text-3xl font-semibold">Anmelden</h1>
+    102 +            <p className="text-sm text-gray-500">
+    103 +              Passwort: <span className="font-mono">dais2025</span>
+    104 +            </p>
+    105 +          </header>
+    106 +          <input
+    107 +            name="name"
+    108 +            placeholder="Name"
+    109 +            className="w-full rounded-2xl border border-daisy-200 px-4 py-3 focus:border-daisy-400 focus
+         :outline-none"
+    110 +          />
+    111 +          <input
+    112 +            name="email"
+    113 +            type="email"
+    114 +            placeholder="E-Mail"
+    115 +            className="w-full rounded-2xl border border-daisy-200 px-4 py-3 focus:border-daisy-400 focus
+         :outline-none"
+    116 +          />
+    117 +          <input
+    118 +            name="password"
+    119 +            type="password"
+    120 +            placeholder="Passwort"
+    121 +            className="w-full rounded-2xl border border-daisy-200 px-4 py-3 focus:border-daisy-400 focus
+         :outline-none"
+    122 +          />
+    123 +          {error && (
+    124 +            <p className="text-sm font-semibold text-red-500">{error}</p>
+    125 +          )}
+    126 +          <button
+    127 +            type="submit"
+    128 +            className="w-full rounded-2xl bg-gradient-to-r from-daisy-400 to-daisy-500 py-3 text-sm font
+         -semibold uppercase tracking-[0.3em] text-white shadow-card transition hover:opacity-90"
+    129 +          >
+    130 +            Login
+    131 +          </button>
+    132 +        </form>
+    133 +      </div>
+    137 +  return (
+    138 +    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+    139 +  );
+    140 +}
+
+• Explored
+  └ Read layout.tsx
+
+• Edited src/app/layout.tsx (+4 -2)
+     2  import "./globals.css";
+     3 -import type { Metadata } from "next";
+     3 +import { AuthGate } from "@/components/auth-gate";
+     4
+       ⋮
+    17      <html lang="de">
+    18 -      <body className="font-sans">{children}</body>
+    18 +      <body className="font-sans">
+    19 +        <AuthGate>{children}</AuthGate>
+    20 +      </body>
+    21      </html>
+
+• Edited src/components/mobile-shell.tsx (+3 -2)
+    10  import { SuccessToast } from "./success-toast";
+    11 +import { UserMenu } from "./user-menu";
+    12
+       ⋮
+    34            <div className="rounded-[36px] bg-gradient-to-b from-daisy-400 via-daisy-300 to-daisy-200 p-6 t
+        ext-white shadow-soft">
+    34 -            <div className="flex items-center justify-between">
+    35 +            <div className="flex items-start justify-between">
+    36                <div>
+       ⋮
+    44                </div>
+    44 -              <div className="h-14 w-14 rounded-full bg-white/20 backdrop-blur" />
+    45 +              <UserMenu />
+    46              </div>
+
+• Added src/components/user-menu.tsx (+61 -0)
+     1 +"use client";
+     2 +
+     3 +import { useState, useRef, useEffect } from "react";
+     4 +import { UserCircle2 } from "lucide-react";
+     5 +
+     6 +import { useAuth } from "./auth-gate";
+     7 +
+     8 +export function UserMenu() {
+     9 +  const { user, logout } = useAuth();
+    10 +  const [open, setOpen] = useState(false);
+    11 +  const menuRef = useRef<HTMLDivElement | null>(null);
+    12 +
+    13 +  useEffect(() => {
+    14 +    if (!open) return;
+    15 +    const handler = (event: MouseEvent) => {
+    16 +      if (!menuRef.current) return;
+    17 +      if (!menuRef.current.contains(event.target as Node)) {
+    18 +        setOpen(false);
+    19 +      }
+    20 +    };
+    21 +    document.addEventListener("click", handler);
+    22 +    return () => document.removeEventListener("click", handler);
+    23 +  }, [open]);
+    24 +
+    25 +  if (!user) {
+    26 +    return null;
+    27 +  }
+    28 +
+    29 +  return (
+    30 +    <div className="relative" ref={menuRef}>
+    31 +      <button
+    32 +        type="button"
+    33 +        onClick={() => setOpen((prev) => !prev)}
+    34 +        className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-2 text-white transitio
+        n hover:bg-white/30"
+    35 +      >
+    36 +        <UserCircle2 className="h-6 w-6" />
+    37 +        <span className="hidden text-sm font-semibold md:inline">
+    38 +          {user.name.split(" ")[0]}
+    39 +        </span>
+    40 +      </button>
+    41 +      {open && (
+    42 +        <div className="absolute right-0 mt-3 w-44 rounded-2xl bg-white py-3 text-sm text-gray-900 shadow
+        -card">
+    43 +          <div className="px-4 pb-3">
+    44 +            <p className="text-xs uppercase tracking-[0.3em] text-gray-400">
+    45 +              Angemeldet
+    46 +            </p>
+    47 +            <p className="font-semibold">{user.name}</p>
+    48 +            <p className="text-xs text-gray-500">{user.email}</p>
+    49 +          </div>
+    50 +          <button
+    51 +            type="button"
+    52 +            onClick={logout}
+    53 +            className="w-full px-4 py-2 text-left text-sm font-semibold text-red-500 hover:bg-red-50"
+    54 +          >
+    58 +      )}
+    59 +    </div>
+    60 +  );
+    61 +}
+
+• Explored
+  └ Read package.json
+
+• Edited package.json (+2 -2)
+    5    "scripts": {
+    6 -    "dev": "next dev",
+    6 +    "dev": "next dev -p 3001",
+    7      "build": "next build",
+    8 -    "start": "next start",
+    8 +    "start": "next start -p 3001",
+    9      "lint": "next lint",
+
+─ Worked for 1m 49s ─────────────────────────────────────────────────────────────────────────────────────────────
+
+• - Added a lightweight login system. AuthGate (globs in layout.tsx) shows a branded overlay with name/email/
+    password form (password dais2025), stores the user in localStorage, and provides context for logout or future
+    profile data (src/components/auth-gate.tsx, src/app/layout.tsx).
+  - The header now renders a live user icon menu via UserMenu, showing the logged-in name/email and a “Logoff”
+    action, so you can drop the session without reloading (src/components/user-menu.tsx, src/components/mobile-
+    shell.tsx).
+  - Program submissions no longer show alert; they redirect to /?programCompleted=<name>, where MobileShell
+    displays a transient success toast (src/components/program-form.tsx, src/components/success-toast.tsx, src/
+  No manual “OK” clicks are needed anymore: submit → auto-redirect → toast. And each page is protected by the
+  login gate with a visible user icon/logoff control.
+
+
+
