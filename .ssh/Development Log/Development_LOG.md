@@ -2198,3 +2198,235 @@ report the issue.
 
 
 
+
+
+
+─ Worked for 12m 52s ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• Mind Platform Updates
+
+  - Introduced persistent Mind data structures (visual assets, SMART goals, brain exercises, learning paths, emotion guides)
+    plus a migration and curated seeds so Postgres stores everything the new programs require (prisma/schema.prisma:59, prisma/
+    migrations/20251201090000_mind_programs/migration.sql:1, prisma/seed.ts:87, src/lib/mind-data.ts:1).
+  - Added full API coverage for the new capabilities, including visual uploads, SMART goal CRUD/check-ins, Brain Gym sessions, Learning
+    Path toggles, and Emotion logs so both admin and client UIs stay in sync with Prisma (src/app/api/mind/visuals/route.ts:1, src/app/
+    api/mind/goals/route.ts:1, src/app/api/mind/goals/checkins/route.ts:1, src/app/api/mind/brain-exercises/route.ts:1, src/app/api/
+    mind/brain-exercises/[exerciseId]/complete/route.ts:1, src/app/api/mind/learning-paths/route.ts:1, src/app/api/mind/learning-paths/
+    [pathId]/milestones/[milestoneId]/toggle/route.ts:1, src/app/api/mind/emotions/route.ts:1, src/app/api/mind/emotions/logs/route.ts:1).
+  - Rebuilt the admin dashboard to manage all Mind assets from one place—photo uploads, SMART goal templates, Brain Gym entries, Higher
+    Thinking paths and Emotion guides now live alongside the existing program/reward controls (src/components/admin-panels.tsx:1).
+  - Extended the user-facing Mind area with custom clients for each new program, routed automatically from the program detail page
+    via a reusable completion hook (src/app/programs/[slug]/page.tsx:1, src/hooks/use-program-completion.ts:1, src/components/mind/
+    visualization-training.tsx:1, src/components/mind/smart-goals-program.tsx:1, src/components/mind/brain-training-program.tsx:1, src/
+    components/mind/higher-thinking-program.tsx:1, src/components/mind/emotion-training-program.tsx:1).
+  - Registered the five new Mind programs plus all related TypeScript contracts so they seed into Prisma, show up in menus and provide
+    typed data to both admin and client layers (src/lib/data.ts:19, src/lib/types.ts:70).
+
+  Tests: npm run lint
+
+  Next steps: run npx prisma migrate dev (to apply 20251201090000_mind_programs) followed by npm run db:seed so the app starts with the
+  new Mind assets; then exercise the new Mind programs/admin flows via npm run dev.
+
+
+
+─ Worked for 8m 08s ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• Program stacks can now be authored in the admin, stored in Prisma, highlighted on the landing page, and executed sequentially in a
+  dedicated runner with a consistent completion flow.
+
+  Programms Flow
+
+  - Added the ProgramStack model plus /api/program-stacks GET/POST endpoints, validating module slugs against the existing catalogue so
+    curated flows persist in Postgres (prisma/schema.prisma:132, src/app/api/program-stacks/route.ts:1).
+  - Home now surfaces a “Programms” strip above the category grid and links into the new runner route so users can launch curated routines
+    directly from the landing page (src/app/page.tsx:17).
+  - Built the stack route and runner UI with a progress banner, step chips, guarded navigation buttons, and a shared completion provider
+    so each embedded program can finish without redirecting out of stack mode (src/app/programs/stacks/[slug]/page.tsx:13, src/components/
+    program-stack-runner.tsx:1).
+
+  Admin + Rendering
+
+  - Admin panels fetch stacks alongside other resources and expose a composer UI for naming, describing, ordering, and reviewing combined
+    flows, giving editors full control from one screen (src/components/admin-panels.tsx:26, src/components/admin-panels.tsx:268).
+  - All program screens now render through a shared ProgramContent boundary, while the completion form/hook respect optional redirect
+    overrides, enabling both standalone runs and the stack runner to use the same components (src/components/program-content.tsx:1, src/
+    components/program-form.tsx:45, src/hooks/use-program-completion.ts:8).
+
+  Visualization Tweaks
+
+  - Visualization cards keep using base64 uploads but now span the full card width with contained scaling, noting the justified <img>
+    usage to avoid Next/Image re-encoding (src/components/mind/visualization-training.tsx:72).
+
+  Tests
+
+  - npm run lint
+
+  Next steps:
+
+  1. Run npx prisma migrate dev (or your preferred workflow) to create the new ProgramStack table before exercising the UI/API.
+  2. Use the admin “Programms zusammenstellen” section to seed at least one stack, then walk through it via /programs/stacks/<slug> to
+     verify the sequential mode end‑to‑end.
+
+
+     
+
+
+ Ursache für die 500er: Prisma erreicht die DB nicht (P1001 in terminal.log), daher liefern alle Mind-/Program-Stack-APIs keinen JSON-Body
+    und die Admin-Liste bleibt leer. Es gibt inzwischen auch eine neue Migration für ProgramStack, die noch nicht angewendet wurde.
+  - Fixes vorgenommen:
+      - Migrationen an den erwarteten Schema-Pfad gelegt: src/pages/migrations/20251212090000_add_program_stack_table/migration.sql (plus die
+        vorhandenen Migrationen), damit prisma migrate sie findet.
+      - Admin-Panel robuster gemacht: src/components/admin-panels.tsx prüft API-Responses jetzt auf ok und loggt Fehler statt beim JSON-Parse
+        zu crashen. So bleibt das UI stabil, auch wenn die API ausfällt.
+  - Damit neue Programme/Stacks gespeichert und angezeigt werden:
+      1. DB starten (docker compose up -d db oder eigener Postgres auf localhost:5432 gemäß .env.local).
+      2. Migrationen ausführen: npx prisma migrate deploy --schema src/pages/schema.prisma (oder npm run db:migrate falls konfiguriert) – damit
+         wird auch die neue ProgramStack-Tabelle angelegt.
+      3. Seed-Daten laden: npm run db:seed.
+      4. Frontend neu starten (npm run dev -p 3001) und im Admin einen Stack anlegen; er sollte sofort unten in der Liste und auf der
+         Startseite unter „Programms“ erscheinen.
+
+  Falls die DB weiterhin nicht erreichbar ist, bitte DATABASE_URL prüfen (lokal vs. Docker: db vs. localhost) und sicherstellen, dass Port 5432
+  offen ist.
+
+
+
+   Du startest npx prisma migrate deploy auf dem Host und Prisma zieht dabei .env (Host → DATABASE_URL=...@db:5432). Host kennt den Docker-
+  Netzwerknamen db nicht, daher P1001. Zwei einfache Varianten:
+
+  1. Lokal (Host, Port 5432 gemappt):
+
+  DATABASE_URL="postgresql://dais:dais@localhost:5432/dais" \
+  npx prisma migrate deploy --schema src/pages/schema.prisma
+  DATABASE_URL="postgresql://dais:dais@localhost:5432/dais" \
+  npm run db:seed
+
+  2. Im Compose-Container laufen lassen (dann db als Host ok):
+
+  docker compose run --rm \
+    -e DATABASE_URL=postgresql://dais:dais@db:5432/dais \
+    web npx prisma migrate deploy --schema src/pages/schema.prisma
+
+  docker compose run --rm \
+    -e DATABASE_URL=postgresql://dais:dais@db:5432/dais \
+    web npm run db:seed
+
+  Wichtig: Während du auf dem Host arbeitest, setze temporär DATABASE_URL=...@localhost oder passe .env an. Danach App neu starten (npm run dev
+  -p 3001), dann sollten die Program-Stapel im Admin anlegbar und auf der Startseite sichtbar sein.
+
+
+
+
+
+
+ Gerne Schritt für Schritt (Host-Variante, da dein Postgres auf 5432 gemappt ist):
+
+  1. Sicherstellen, dass der DB-Container läuft (laut docker ps ok).
+  2. Migrationen ausführen (temporär DATABASE_URL auf localhost setzen):
+
+  DATABASE_URL="postgresql://dais:dais@localhost:5432/dais" \
+  npx prisma migrate deploy --schema src/pages/schema.prisma
+
+  3. Seed-Daten einspielen:
+
+  DATABASE_URL="postgresql://dais:dais@localhost:5432/dais" \
+  npm run db:seed
+
+  4. App neu starten:
+
+  npm run dev -p 3001
+
+  5. Admin öffnen, einen Program-Stack anlegen, kurz warten: Er sollte direkt unten in der Liste erscheinen und auf der Startseite unter
+     „Programms“ sichtbar sein.
+
+  Wenn du lieber alles im Docker-Container laufen lässt (kein localhost-Override nötig), sag Bescheid, dann gebe ich die passenden docker
+  compose run ... Befehle.
+
+
+
+─ Worked for 1m 04s ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• - Admin: Program-Stacks lassen sich jetzt direkt bearbeiten. In der Liste ist ein „Bearbeiten“-Button, der ein Modal öffnet; darin kannst du
+    Titel, Beschreibung und Modul-Reihenfolge anpassen und speichern.
+  - Backend: /api/program-stacks unterstützt jetzt PUT (Update per id, mit neuer Slug-Erzeugung). Änderungen werden nach dem Speichern neu
+    geladen.
+
+  Betroffene Dateien:
+
+  - src/components/admin-panels.tsx – Edit-Modal, Bearbeiten-Button, Update-Handler.
+  - src/app/api/program-stacks/route.ts – PUT-Endpoint ergänzt.
+
+  Bitte Dev-Server neu laden und einen Stack im Admin bearbeiten, um den Flow zu testen.
+
+
+─ Worked for 1m 11s ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• - MV1-Visualisierungstraining neu gestaltet: Visuals stehen jetzt untereinander links, rechts läuft ein schmaler vertikaler Flow mit Punkten
+    pro Bild (src/components/mind/visualization-training.tsx). Checkboxen und Bilder bleiben erhalten.
+  - Admin: Visual-Assets lassen sich löschen und komplett anzeigen; Upload unverändert (src/components/admin-panels.tsx). Backend hat dafür
+    einen DELETE-Handler bekommen (src/app/api/mind/visuals/route.ts).
+  - Program-Stacks bekommen einen PUT-Endpoint; bleibt für spätere Edits bestehen (src/app/api/program-stacks/route.ts).
+
+  Hinweis: Tests/Lint nicht ausgeführt. Bitte Dev-Server neu starten/neu laden, dann im Admin Visuals löschen/hinzufügen und den neuen Flow auf
+  der Nutzerseite prüfen.
+
+─ Worked for 1m 36s ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• - Visuals neu sortierbar: Im Admin unter „Visualisierungstraining Assets“ kannst du jede Karte per ↑/↓ verschieben; Reihenfolge wird via
+    PATCH an /api/mind/visuals gespeichert und in der Nutzeransicht übernommen. Löschen bleibt möglich.
+  - Visuals bekommen eine persistierte order-Spalte (Migration 20251214090000_visuals_order in prisma/migrations und src/pages/migrations;
+    Schema angepasst). Seed setzt nun feste Reihenfolge.
+  - Frontend MV1: Layout jetzt links die Bildkarten, rechts ein vertikaler Flow-Punkt je Karte. Am Ende ersetzt ein 0–10 Schieberegler das
+    Texteingabefeld für „States & Gefühle…“. reflectionScore wird mitgeschickt.
+  - APIs: /api/mind/visuals – GET sortiert nach order, POST hängt mit laufender order an, PATCH akzeptiert order: [ids...] für Reorder, DELETE
+    wie gehabt.
+
+  Wichtig: DB-Migration ausführen, damit order existiert:
+
+  DATABASE_URL="postgresql://dais:dais@localhost:5432/dais" \
+  npx prisma migrate deploy --schema src/pages/schema.prisma
+
+  (oder analog im Compose-Container). Danach ggf. npm run db:seed zum Auffüllen.
+
+  Betroffene Dateien:
+
+  - src/app/api/mind/visuals/route.ts
+  - src/components/admin-panels.tsx
+  - src/components/mind/visualization-training.tsx
+  - src/pages/schema.prisma, prisma/migrations/20251214090000_visuals_order/…, src/pages/migrations/…
+  - src/lib/mind-data.ts, src/lib/types.ts, prisma/seed.ts
+
+  Bitte Server neu starten/neu laden nach Migration, dann Reorder und Slider testen.
+
+
+─ Worked for 1m 18s ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• - Admin „SMART Ziele“: Ziele werden jetzt in einer Liste angezeigt, per „Bearbeiten“ öffnet sich ein Modal. Dort kannst du alle SMART-Felder
+    editieren und einen Fortschritts-Slider (0–100%) setzen.
+  - Backend: /api/mind/goals unterstützt PUT zum Aktualisieren der Zieltexte und legt optional einen Progress-Check-in an.
+  - Form-States angepasst, Progress-Slider in Modal.
+
+  Betroffene Dateien:
+
+  - src/app/api/mind/goals/route.ts (PUT hinzugefügt)
+  - src/components/admin-panels.tsx (Ziel-Liste, Edit-Modal, Progress-Slider)
+
+  Bitte Dev-Server neu laden und testen: Ziel anklicken, anpassen, speichern, dann sollte die Liste aktualisiert sein.
+
+
+─ Worked for 35s ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• - Nutzeransicht /programs/ziele-smart: Logs-Button ergänzt je Ziel, plus Log-Modal mit Zeitstempel, Fortschritt und Text. Das Textfeld heißt
+    jetzt „Erfolgslog“. (Datei src/components/mind/smart-goals-program.tsx)
+  - Die Logs greifen auf die gelieferten Checkins des Ziels zu (max. 50), die im Modal scrollbar angezeigt werden.
+
+  Bitte Seite neu laden, dann sollte der Logs-Button sichtbar sein und das Modal die Einträge zeigen.#
+
+
+
+─ Worked for 9s ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• - Nach „Check-in sichern“ wird das Erfolgslog-Textfeld des jeweiligen Ziels geleert (src/components/mind/smart-goals-program.tsx). Bitte
+    Seite neu laden und den Check-in testen; das Feld sollte danach wieder leer sein.
+
+
