@@ -3,7 +3,8 @@ DAiS Deploy Guide (VPS via SSH)
   Zugang zum VPS, Repo github.com/BetriebsIntelligenz/DAiS erreichbar._
 
   1. VPS vorbereiten
-      - Per SSH einloggen.
+      - Per SSH einloggen. 
+        ssh -i .ssh/hostinger_key root@72.61.81.221
       - Pakete aktualisieren: sudo apt update && sudo apt upgrade -y
       - Docker + Compose installieren (falls nicht vorhanden):
 

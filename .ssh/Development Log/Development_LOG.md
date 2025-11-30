@@ -2507,4 +2507,54 @@ report the issue.
   Programme zeigen.
 
 
-  
+  Docker-Setup aktualisiert, damit der aktuelle Stand wie in der Dev-Umgebung läuft:
+
+  - Dockerfile: EntryPoint-Script hinzugefügt, das beim Start prisma migrate deploy versucht und danach den angegebenen Befehl ausführt. Port
+    auf 3001 gesetzt (ENTRYPOINT ./docker-entrypoint.sh, EXPOSE 3001).
+  - Neues Script docker-entrypoint.sh (führt Migration, startet dann den übergebenen CMD).
+  - docker-compose: Web-Port jetzt 3001:3001 (entspricht Dev), sonst unverändert.
+  - .env.docker: NEXTAUTH_URL auf http://localhost:3001 korrigiert.
+
+  Tests: npm run lint
+
+  Hinweise zum Neuaufsetzen:
+
+  1. Image neu bauen: docker-compose build
+  2. Stack starten: docker-compose up
+      - Das EntryPoint-Script versucht automatisch die Migration. Falls der DB-Container beim ersten Start noch nicht bereit ist, einfach nach
+        kurzer Zeit docker-compose restart web oder einmal docker-compose up neu starten, dann läuft migrate deploy durch.
+  3. Bei Bedarf migrations manuell: docker-compose run --rm web npx prisma migrate deploy --schema src/pages/schema.prisma (DB muss laufen).
+
+  Migrationsstand: Durch fehlende lokale DB konnte ich keine neue Migration erzeugen. Wenn du die Anforderungen/XPs noch nicht migriert hast,
+  bitte einmal lokal/mit laufender DB:
+  DATABASE_URL="postgresql://dais:dais@localhost:5432/dais" npx prisma migrate dev --name add_requirement_xp --schema src/pages/schema.prisma
+  Danach Docker neu bauen, damit der Web-Container die Migration kennt.
+
+
+
+
+
+─ Worked for 34s ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• Der Build-Fehler kam von einem Prisma-Typenproblem in brain-exercises. Behoben:
+
+  - src/app/api/mind/brain-exercises/route.ts: orderBy jetzt typisiert mit Prisma.SortOrder, include mit Prisma.BrainExerciseInclude, damit
+    next build durchläuft.
+
+  Check: npm run lint grün.
+
+  Bitte Docker-Build erneut ausführen:
+
+  - docker compose up --build -d
+
+  Hinweis zum Compose-Warnhinweis: Das version:-Feld ist inzwischen obsolet; du kannst es entfernen oder ignorieren. Wenn noch Migrationen
+  fehlen, vorher die DB (oder mit compose) starten und ausführen:
+
+  - DATABASE_URL="postgresql://dais:dais@localhost:5432/dais" npx prisma migrate dev --name add_requirement_xp --schema src/pages/schema.prisma
+    (lokal)
+    oder im Container, wenn DB läuft:
+  - docker compose run --rm web npx prisma migrate deploy --schema src/pages/schema.prisma
+
+  Danach sollte npm run build im Docker-Image durchlaufen.
+
+
