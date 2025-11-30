@@ -2430,3 +2430,81 @@ report the issue.
     Seite neu laden und den Check-in testen; das Feld sollte danach wieder leer sein.
 
 
+
+
+
+─ Worked for 2m 55s ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• Änderungen umgesetzt:
+
+  - Datenmodell/API: Requirement um xp erweitert; POST/PATCH nehmen das Feld an. Beim Statuswechsel auf „done“ wird einmalig eine XP-
+    Transaktion erzeugt (Kategorisierung nach Bereich; default Demo-User-Fallback) (src/pages/schema.prisma, src/app/api/requirements/route.ts,
+    src/lib/types.ts).
+  - UI: Formular hat jetzt ein XP-Feld, Detail-Ansicht zeigt XP und besitzt oben rechts einen „Bearbeiten“-Button. Edit-Flow lädt die
+    bestehenden Werte in das Formular, speichert per PATCH und aktualisiert das Board (src/components/requirements-board.tsx, src/components/
+    requirements-modals.tsx).
+  - Lint läuft sauber (npm run lint).
+
+  To-Do für dich: Neue Migration wegen des XP-Felds erzeugen und anwenden, z.B.
+  DATABASE_URL="postgresql://dais:dais@localhost:5432/dais" npx prisma migrate dev --name add_requirement_xp --schema src/pages/schema.prisma
+
+
+• Der XP-Abgleich hing daran, dass Anforderungen bisher ohne Nutzerbezug gespeichert wurden. Jetzt werden E-Mail/Benutzer in den Requests
+  mitgegeben und XP bei Statuswechsel „Fertig“ dem eingeloggten User gutgeschrieben.
+
+  Was geändert wurde:
+
+  - API/Client: Requirement-POST/PATCH senden jetzt die aktuelle user.email; Statuswechsel trägt XP dem passenden User gut (wenn Status von
+    ≠done → done) und erzeugt dafür eine XP-Transaktion.
+  - UI: Board lädt Anforderungen nutzerspezifisch (/api/requirements?email=<user>). Edit/Status-Änderungen schicken ebenfalls die E-Mail, damit
+    XP/Gutschrift beim richtigen Konto landen.
+
+  Wichtig:
+
+  - Migration fürs neue xp-Feld läuft weiterhin: DATABASE_URL="postgresql://dais:dais@localhost:5432/dais" npx prisma migrate dev --name
+    add_requirement_xp --schema src/pages/schema.prisma
+  - Bestehende, schon abgeschlossene Anforderungen ohne User-Zuordnung buchen kein XP nachträglich; neue/erneute Statuswechsel auf „Fertig“
+    nach diesem Update buchen korrekt.
+
+  Hinweise:
+
+  - Nach Deployment einmal neu laden, dann eine Anforderung mit XP anlegen oder Status erneut auf „Fertig“ setzen; der Score unter /score
+    sollte sofort steigen.
+
+
+─ Worked for 1m 03s ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• Jetzt werden Anforderungen-XP korrekt in Score und Timeline berücksichtigt:
+
+  - /api/xp/summary aggregiert XP direkt aus allen xpTransaction-Einträgen des aktuellen Users (inkl. Anforderungen), statt nur Programmruns
+    zu zählen.
+  - /api/timeline filtert auf den eingeloggten User, zieht XP-Einträge mit source=requirement:*, holt die zugehörigen Anforderungen und zeigt
+    sie als Aktivitäten mit XP an.
+
+  UI-Seite: Das Requirements-Board lädt nun nutzerspezifisch via E-Mail; Statuswechsel senden die E-Mail mit, sodass die XP-Transaktion dem
+  richtigen Konto gutgeschrieben wird.
+
+  Nächste Schritte:
+
+  - Migration für das XP-Feld weiterhin ausführen:
+    DATABASE_URL="postgresql://dais:dais@localhost:5432/dais" npx prisma migrate dev --name add_requirement_xp --schema src/pages/schema.prisma
+  - Danach: Anforderung mit XP anlegen, auf „Fertig“ setzen → /score neu laden; Gesamt-XP und „Letzte Aktivitäten“ sollten sofort die
+    Anforderung zeigen.
+
+
+  
+─ Worked for 52s ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• Fix für die Timeline/Score-Ansicht:
+
+  - /score lädt die Timeline jetzt mit der aktuellen User-E-Mail, sodass Programmabschlüsse, Journale, Rewards und Anforderungen des
+    eingeloggten Users gemeinsam angezeigt werden (src/components/score-cards.tsx).
+  - Timeline-Endpoint ist bereits user-basiert und liefert weiterhin Anforderungen plus alle anderen Aktivitäten; mit der E-Mail im Request
+    kommen nun auch deine Programm-Events zurück.
+  - Lint erneut grün (npm run lint).
+
+  Bitte Seite neu laden; nach einer Status-Änderung auf „Fertig“ sollten jetzt sowohl XP-Total als auch „Letzte Aktivitäten“ Anforderungen und
+  Programme zeigen.
+
+
+  
