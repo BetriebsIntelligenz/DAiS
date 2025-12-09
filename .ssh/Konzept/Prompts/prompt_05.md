@@ -1,0 +1,1 @@
+Erstelle im admin bereich eine zentralen bereich wo man alle XP vergaben je karte (MG1 — SMART Ziele) und je anforderung vergeben und ändern kann. achte drauf, dass diese änderungen im neuen bereich auf den admin dashboard immer aktualisiert werden und es überall (auch im score Dashboard) vollumfänglich implementiert wird. 

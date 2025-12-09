@@ -2558,3 +2558,317 @@ report the issue.
   Danach sollte npm run build im Docker-Image durchlaufen.
 
 
+
+─ Worked for 6m 00s ────────────────────────────────────────────────────────────
+
+• Backend now supports updating XP rewards and the admin dashboard includes an
+  XP Control Center so you can tune every card (“MG1 — SMART Ziele” etc.) and
+  each requirement with instant refreshes across the score view.
+
+  - Backend src/app/api/programs/route.ts:1-238 adds a PATCH /api/programs
+    handler that validates xpReward, updates both the column and the stored
+    xpRules.baseValue, then returns the normalized program so future runs (and
+    thus score transactions) use the new XP split automatically.
+  - Admin data/state src/components/admin-panels.tsx:108-557 now keeps
+    requirements plus per-item XP drafts/saving flags, loads /api/requirements
+    during refreshMindData, and wires helper actions (updateProgramXpDraft,
+    persistProgramXp, persistRequirementXp) to the new program API and the
+    existing requirements PATCH endpoint.
+  - XP Control Center UI src/components/admin-panels.tsx:1295-1440 introduces
+    a nav-linked section with two articles: one lists every program card with
+    inline XP inputs + save buttons, the other lists all requirements with the
+    same controls, so edits stay in one place and propagate to the rest of the
+    admin dashboard/scoreboard.
+
+  Tests: npm run lint
+
+  Next:
+
+  1. Use the XP Control Center to adjust a card value and run that program once
+     to confirm the new XP booking shows up on the score dashboard.
+  2. Update a requirement’s XP and mark it “Erledigt” to ensure the resulting XP
+     transaction reflects the edited amount.
+
+
+     ─ Worked for 1m 45s ────────────────────────────────────────────────────────────
+
+• - Updated the XP evaluation logic so custom cards that don’t submit
+    ProgramRunner quality payloads still earn XP. src/server/program-run-
+    service.ts:96-142 now only enforces the min-quality threshold when ratings
+    are actually provided and treats the optional custom rule as “passed” unless
+    a payload explicitly flags it as failed.
+  - Lint stays green (npm run lint). Please run the Visualisierungstraining or
+    SMART Ziele cards once more; the resulting ProgramRun should now book the
+    configured XP (e.g. +2400) and appear correctly in the Score dashboard.
+
+ ─ Worked for 1m 51s ────────────────────────────────────────────────────────────
+
+• - src/components/admin-panels.tsx:108-120 trims the admin navigation and
+    related state so only the card XP controls remain; requirement-specific
+    drafts/fetches were removed.
+  - src/components/admin-panels.tsx:1220-1294 now renders a single “XP ·
+    Programm Karten” article, and the section copy drops the (now-removed)
+    requirement references.
+
+  Tests: npm run lint
+
+  The XP Control Center is once again focused solely on program cards, with the
+  “XP · Anforderungen / XP je Anforderung” block fully removed.
+
+─ Worked for 13m 23s ───────────────────────────────────────────────────────────
+
+• - Replaced the admin “Navigation” list with accordion-style sections so each
+    area shows a full-width clickable bar that toggles its content. The helper
+    renderAccordionSection now drives the collapsible experience, and sections
+    such as Program Builder, Stacks, Rewards, Cards, and the XP Center are
+    rendered inside these dropdowns (src/components/admin-panels.tsx:90-115,
+    428-635).
+  - All card-management subsections (Visuals, SMART Ziele, Brain Training,
+    Higher Thinking, Emotion Training) now live inside the Cards accordion
+    content, preserving their existing forms and stats while only appearing when
+    that bar is expanded (src/components/admin-panels.tsx:658-1044).
+  - XP Control Center received the same treatment, and the modals (stack edit,
+    goal edit, logs) were moved outside the accordion bodies so they can open
+    regardless of the collapsed state (src/components/admin-panels.tsx:1046-
+    1288).
+
+  Tests: npm run lint#
+
+
+
+
+─ Worked for 37s ───────────────────────────────────────────────────────────────
+
+• - Accordion header now only shows the menu title/subtitle; the explanatory
+    text and forms sit inside the collapsible content so they’re hidden until
+    the section opens.
+  - Added a soft gradient background to each accordion header when collapsed,
+    switching back to white once expanded for continuity with the existing card
+    styling.
+  - Simplified the accordion content container to toggle via Tailwind hidden/
+    block, ensuring collapsed sections really hide their text.
+
+  Tests: npm run lint
+
+  ─ Worked for 44s ───────────────────────────────────────────────────────────────
+
+• - Centered the entire pill dock by constraining it to max-w-3xl, making the
+    <nav> itself a flex container that uses mx-auto/justify-center, and keeping
+    the icon cluster flexed with justify-center so the blue capsule always sits
+    in the middle no matter the screen width (src/components/menu-dock.tsx:27-
+    35).
+  - Ensured every icon row stays centered even when one item expands to show its
+    label by applying the same centering logic to the inner flex wrapper; the
+    remaining icons now reflow symmetrically after any click/route change (src/
+    components/menu-dock.tsx:31-55).
+  - MobileShell already picks up the updated dock, so no additional layout
+    adjustments were needed there.
+
+  Tests not run (layout change only). Possible follow-up: 1) npm run dev
+  to visually confirm the centering/animation meets expectations across
+  breakpoints.
+
+  ─ Worked for 8s ────────────────────────────────────────────────────────────────
+
+• - Adjusted MenuDock so the blue capsule stretches across the full content
+    width by removing the max-w cap and making both the <nav> and its inner
+    wrapper span w-full; this aligns it visually with the yellow header and the
+    white content card. (src/components/menu-dock.tsx:27-34)
+  - Kept the flex centering so the icon row remains centered even as active
+    items expand. (src/components/menu-dock.tsx:31-34)
+
+  Tests not run (layout-only). Suggestion: 1) Refresh the Rewards screen in npm
+  run dev to confirm the bar width matches across breakpoints.
+─ Worked for 8s ────────────────────────────────────────────────────────────────
+
+• - Fixed the icon misalignment by removing the leftover ml-2 spacing when
+    the label is collapsed; now the margin is only added in the active state
+    and drops to zero when inactive, keeping icons perfectly centered in their
+    circular background (src/components/menu-dock.tsx:46-53).
+
+  Tests not run (UI tweak). If anything still looks off in the browser after npm
+  run dev, let me know and we can fine-tune further.
+
+
+
+  ─ Worked for 37s ─────────────────────
+
+• - Trimmed the hero card to show
+    only a large title, removing
+    the DAiS label and descriptive
+    paragraph so the top blocks (like
+    Activity Timeline) now match the
+    request (src/components/mobile-
+    shell.tsx:5-44).
+  - Kept the prop signature stable
+    by aliasing description to
+    _description, preventing unused-
+    variable lint while allowing
+    existing pages to keep passing the
+    value if needed for future copy
+    updates (src/components/mobile-
+    shell.tsx:5-14).
+
+  Tests not run (visual change
+  only). If you want to reuse the
+  descriptions elsewhere (e.g.,
+  tooltips), we can wire them up next.
+
+
+
+─ Worked for 45s ─────────────────────
+
+• - Wrapped the title and navigation
+    into one gradient card so the
+    header + menu now appear as a
+    single blue block; the gradient
+    matches the original header
+    styling and spans the entire
+    unit (src/components/mobile-
+    shell.tsx:20-35).
+  - Embedded MenuDock inside that
+    block and adjusted it to rely on
+    the parent gradient, keeping only
+    a subtle translucent backdrop
+    for the icon row so it feels
+    integrated rather than like a
+    second pill (src/components/menu-
+    dock.tsx:27-36).
+
+  Tests not run (styling only).
+  Preview the UI to confirm the
+  combined block matches your visual
+  expectations.
+─ Worked for 18s ─────────────────────
+
+• - Removed the XP badge from
+    each program entry so only the
+    category, code, title, and summary
+    remain in the list; no other
+    layout adjustments were made (src/
+    app/programs/page.tsx:27-41).
+  - Replaced the animated gradient
+    on program cards with a static
+    gradient—it now keeps the same
+    look without any background motion
+    (src/app/globals.css:37-44).
+
+  Tests not run (CSS/markup tweaks
+  only). If you want another detail on
+  the program cards (e.g., duration),
+  just let me know.
+
+
+
+
+
+
+
+─ Worked for 7m 39s ─────────────────────────────────────────────────────────────────────────
+
+• - Added a dedicated RequirementLog relation so every requirement can persist timestamped
+    notes, updated the Prisma schema, and supplied a matching migration for deployment
+    (src/pages/schema.prisma:257-287, prisma/migrations/20251215090000_requirement_logs/
+    migration.sql:1-17).
+  - Extended the shared type definitions and introduced a focused API endpoint at /api/
+    requirements/[id]/logs to list and create entries scoped to the current user (src/lib/
+    types.ts:354-376, src/app/api/requirements/[id]/logs/route.ts:1-74).
+  - Wired the requirements board to fetch, cache, and submit log entries, then expanded
+    the detail modal with a journal-like composer and history viewer so every status card
+    now exposes its activity log with precise timestamps (src/components/requirements-
+    board.tsx:57-388, src/components/requirements-modals.tsx:230-405).
+
+  Tests were not run (UI + schema changes).
+  Next steps: 1) Run npx prisma generate && npx prisma migrate deploy (or prisma migrate dev)
+  to apply the new RequirementLog table. 2) Start the app and add a few requirement notes to
+  confirm the new log list updates live.
+
+
+
+
+
+ docker compose exec only works for running services, and web isn’t up yet—that’s why each
+  command fails immediately. Either:
+
+  1. Start the app container first, then exec inside it:
+
+     sudo docker compose up -d web
+     sudo docker compose exec web npx prisma migrate deploy --schema src/pages/schema.prisma
+     sudo docker compose exec web npx prisma generate
+     sudo docker compose exec web npm run db:seed   # optional
+  2. Or run everything directly on the host while pointing Prisma at the local DB:
+
+     DATABASE_URL="postgresql://dais:dais@localhost:5432/dais" \
+       npx prisma migrate deploy --schema src/pages/schema.prisma
+
+     DATABASE_URL="postgresql://dais:dais@localhost:5432/dais" \
+       npx prisma generate
+
+  Either approach will apply the new RequirementLog migration now that the dais-db-1
+  container is running.
+
+
+
+  ─ Worked for 5m 00s ─────────────────────────────────────────────────────────────────────────
+
+• Requirement log API now bypasses the missing Prisma model and uses parameterized SQL
+  helpers so loading/saving requirement logs no longer throws when the Prisma client hasn’t
+  been regenerated.
+
+  - Introduced typed helpers that query and insert rows via prisma.$queryRaw, generate
+    IDs with randomUUID, and guard against failed inserts so the API no longer depends on
+    prisma.requirementLog being present (src/app/api/requirements/[id]/logs/route.ts:1).
+  - Switched both GET and POST handlers to call the new helpers, keeping the existing auth/
+    ownership checks while ensuring both read/write paths share the same safe data access
+    (src/app/api/requirements/[id]/logs/route.ts:50, src/app/api/requirements/[id]/logs/
+    route.ts:71).
+
+  Tests
+
+  - npm run lint
+
+  Next Steps
+
+  1. Run the app (npm run dev) and exercise viewing/creating requirement logs to confirm the
+     new SQL-based flow works against your current database/migrations.
+
+
+
+
+
+─ Worked for 1m 14s ─────────────────────────────────────────────────────────────────────────
+
+• Logs API now self-heals when the RequirementLog table hasn’t been migrated yet, so the
+  requirements cards no longer hit a 500.
+
+  - Added a lightweight ensureRequirementLogTable() guard that probes the table, auto-creates
+    it (including keys and index), and memoizes the result to avoid race conditions; both
+    select/insert helpers await the guard so requests succeed even on fresh databases (src/
+    app/api/requirements/[id]/logs/route.ts:1).
+  - Slightly hardened the insert helper to throw if Postgres doesn’t return a row so the API
+    fails loudly only on real DB errors (src/app/api/requirements/[id]/logs/route.ts:90).
+
+  Tests:
+
+  - npm run lint
+
+  Next step: restart dev server (npm run dev) and reload / use the requirements board to
+  confirm logs load/save successfully once the table is initialized.
+
+
+─ Worked for 37s ────────────────────────────────────────────────────────────────────────────
+
+• RequirementLog now auto-provisions itself before any query runs, so the requirements cards
+  no longer hit a 500 even when that table hasn’t been migrated yet.
+
+  - Added a memoized ensureRequirementLogTable() that issues CREATE TABLE IF NOT EXISTS plus
+    CREATE INDEX IF NOT EXISTS, ensuring the schema exists before every read/write while
+    avoiding repeated DDL (src/app/api/requirements/[id]/logs/route.ts:19).
+  - Both the fetch/insert helpers now await that guard so API calls succeed on fresh
+    databases without needing a Prisma regeneration (src/app/api/requirements/[id]/logs/
+    route.ts:52, src/app/api/requirements/[id]/logs/route.ts:62).
+
+  Tests: npm run lint
+
+  Next step: restart npm run dev, then load and interact with the requirements board to
+  confirm the logs render and new entries save successfully.
