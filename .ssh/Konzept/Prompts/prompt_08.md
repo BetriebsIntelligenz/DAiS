@@ -1,6 +1,50 @@
 Führe folgende Änderungen durch. Prüfe dabei auch, ob im Admin Bereich zu diesem ein Einstellungsbereich gibt, und passe ggf. auch dort notwendige Inhalte an. Falls für die Anpassung Datenbank Änderungen notwendig sind, fasse kurz zusammen was du geändert hast.
 
+
 ** Status: Offen **
+# Bereich:
+MM5 — Day Planning
+## Änderungen:
+- entferne diesen bereich "Fortschritt: 3/3"
+- Entferne die timer funktionalität
+- Erstelle folgende neuen Features:
+    - Folgende Aktivitäten zum abhacken:
+        - Emails geprüft (ein feld für notiz zu einer email/ Textfeld)
+        - Termine geprüft (ein texfeld zur eingabe welche vorbereitungen heute zu dem termin notwendig sind)
+        - bei senden des formulars auf folgende seite weiterleiten http://localhost:3001/requirements ()
+- Im kopfbereich der karte: Kopfbereich: „Heute ist Donnerstag, 11. Dezember“ (datum von heutigen tag)
+- alle eingaben sollten wie bei (http://localhost:3001/programs/daily-checklist-body) in einem Verlauf ansehbar sein mit zeitstempel
+
+
+
+
+** Status: Fertig **
+# Bereich:
+Neuer Bereich Namens: MED -- Meditation
+Kategorie Bereich: Mind
+
+## Features:
+- Auswahl aus folgenden Dropdowns:
+    - Sayajin Meditation
+    - Earth Love Meditation
+- Wenn mein ein Dropdown aklickt soll horizontal folgender Ablauf angezeigt werden:
+    - Bei Sayajin Meditation:
+        1. Durch Vibration und Visualisation Energieball um Körper erzeugen.
+        2. Energieball um Wachsen lassen.
+        3. Energieball in Statosphäre bewegen.
+        4. Enegieball auf Erde splitten und an Energiebedürftige verteilen.
+
+    - Bei Earth Love Meditation:
+        1. Liebe an Erde senden
+        2. Dankbarkeit an Erde senden
+
+## Aufgaben
+    1. Implemetiere das Programm genauso wie die bisherigen Programme
+    2. Erstelle alle notwendigen Datenbank Änderungen im aktuellen Schema und zeige beim Output wie die neuen Änderungen in die laufende Docker Datenbank eingespielt werden können (Kurze Anleitung, benutze zur erstellung ähnliche Befehle wie hier bereits verwendet: .ssh/Konzept/Anleitungen/DB_Integration_VPS_Migration.md)
+    3. Erstelle zu dem Programm im Admin Bereich einen Bereich, wo man anpassungen machen kann (Ähnlich wie bei den anderen Programmen)
+
+
+** Status: Fertig **
 # Bereich:
 DB1 — Daily Body Checklist
 ## Änderungen:
@@ -43,3 +87,18 @@ Implementiere noch, dass unterhalb des bereichs "Morning Sport absolviert" ein d
 ## Änderungen:
 - 
 ```
+
+
+** Status: Fertig **
+# Bereich:
+/mm1-incantations
+
+## Änderungen:
+- Entferne den schritt für schritt modus und erstelle stattdessen eine checkbox liste (jeder text soll eine kleine karte sein , die man mit der checkbox abhacken kann)#
+- es soll foglende auswahlmöglichkeiten geben: 
+    - Reichtum ist mein natürlicher Zustand	
+    - Ich bin ein Magnet für Geld und Erfolg.	
+    - Ich bin Energie.	
+    - Ich bin gesund.	
+    - Ich bin dankbar für meine Gesundheit.
+unterhalb der karten soll eine scale (wie bei body morgen training) sein von 1 bis 10 mit den Titel "Intensivität"
