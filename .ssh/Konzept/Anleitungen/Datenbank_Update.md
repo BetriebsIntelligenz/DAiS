@@ -3,13 +3,17 @@
   - Start services – ensure the app and database containers are running before touching
     Prisma:
     sudo docker compose up -d db web
+
   - Apply migrations – run Prisma inside the web container (it already has the right schema
     path):
     sudo docker compose exec web npx prisma migrate deploy --schema prisma/schema.prisma
+
   - Regenerate client – keep the Prisma Client in sync:
     sudo docker compose exec web npx prisma generate
+
   - Seed data (optional) – if your change needs refreshed demo data:
     sudo docker compose exec web npm run db:seed
+    
   - Troubleshooting tips
       - If docker compose exec web … errors with “service is not running”, rerun the first
         step.

@@ -2872,3 +2872,48 @@ report the issue.
 
   Next step: restart npm run dev, then load and interact with the requirements board to
   confirm the logs render and new entries save successfully.
+
+
+  ─ Worked for 2m 11s ───────────────────────────────────────────────────────────────
+
+• Hauptursache
+
+  - In docker-compose.yml:20 ist der Web-Container auf dem Host eigentlich
+    für Port 3992 veröffentlicht ("3992:3001"). Dein docker ps zeigt aber
+    0.0.0.0:3001->3001. Damit trifft Nginx höchstwahrscheinlich weiter
+    127.0.0.1:3992, findet dort aber keinen Dienst und antwortet mit 502. Entweder
+    läuft eine bearbeitete Compose-Datei, oder der Proxy wurde nie auf 3001
+    umgestellt.
+
+  Empfohlene Schritte
+
+  - Port-Zuordnung festzurren: Entweder ports: - "3992:3001" in der Compose-
+    Datei lassen und den Stack mit docker compose up -d neu starten, oder den
+    Nginx-Upstream auf http://127.0.0.1:3001 (bzw. unix:/run/docker.sock-Proxy)
+    ändern und den Dienst neu laden. Wichtig ist, dass Compose-Port und Nginx-
+    Ziel übereinstimmen.
+  - Verifizieren, dass der Container wirklich antwortet:
+    docker compose logs -f web → sollte ready - started server on 0.0.0.0:3001
+    zeigen.
+    curl -I http://127.0.0.1:3001 vom VPS aus → muss HTTP 200 zurückgeben; sonst
+    lauscht Next.js nicht auf dem externen Interface.
+  - Danach Nginx neu laden (sudo nginx -t && sudo systemctl reload nginx) und
+    erneut testen.
+
+  Noch zu erledigen
+
+  - Passe NEXTAUTH_URL in .env.docker:3 auf deine echte Domain (z. B. https://
+    app.deinedomain.de) an, sonst erzeugt NextAuth weiterhin Redirects/Cookies
+    auf localhost:3001.
+  - Optional: entferne die veraltete version-Angabe aus docker-compose.yml (der
+    Docker-Daemon warnt bereits) und überlege, für Produktion nicht npm run dev,
+    sondern das bereits gebaute npm start zu nutzen.
+
+  Sobald Port und Proxy übereinstimmen, sollte der 502 verschwinden. Falls
+  nicht, bitte die Logs von docker compose logs web sowie den relevanten server
+  { … }-Block aus der Nginx-Konfiguration schicken, dann schauen wir weiter.
+
+ 
+› Summarize recent commits
+ 
+  98% context left · ? for shortcuts
