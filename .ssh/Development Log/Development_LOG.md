@@ -2944,8 +2944,7 @@ report the issue.
 
   - Migration wie in .ssh/Konzept/Anleitungen/DB_Integration_VPS_Migration.md: cd DAISV2/DAiS → docker compose down
     --volumes → docker compose up -d db web → docker compose exec web npx prisma migrate deploy --schema src/pages/
-    schema.prisma (optional direkt danach docker compose exec web sh -c "npx prisma migrate deploy --schema src/
-    pages/schema.prisma && npm run db:seed" um die Sayajin/Earth-Love-Flows vorzufüllen).
+    schema.prisma (optional direkt danach  um die Sayajin/Earth-Love-Flows vorzufüllen).
 
   Verification
 
@@ -2958,4 +2957,348 @@ report the issue.
 
 
 
-         
+
+
+
+
+
+
+─ Worked for 2m 10s ────────────────────────────────────────────────────────────────────────────────────────
+
+• - In src/components/program-form.tsx:17-36 the Zod schema for plain text/HTML exercises now just accepts
+    strings, so empty answers are considered valid and program cards no longer block submission on untouched
+    fields.
+  - ProgramRunner no longer checks for populated ritual steps before enabling “Weiter” and it falls back to
+    a safe feasibility flag instead of throwing validation errors (src/components/program-runner.tsx:454-
+    737), letting users advance or finish even if they skip every input.
+  - The SMART goals flow now completes without forcing a goal check-in; the completion handler simply relays
+    whatever goal list state exists (src/components/mind/smart-goals-program.tsx:91-97).
+
+  Tests: npm run lint
+
+  Next steps: 1) Manually smoke-test a couple of programs (e.g., Ziele SMART & a ritual-based one) in the
+  browser to confirm the cards advance/finish without input and XP booking still works as expected.
+
+
+
+
+
+─ Worked for 2m 19s ────────────────────────────────────────────────────────────────────────────────────────
+
+• - ProgramRunner no longer enforces non-empty ritual inputs before advancing or finishing; feasibility
+    defaults to a safe value if untouched, so every blueprint-based card can complete immediately (src/
+    components/program-runner.tsx:454-737). The generic form renderer likewise stops validating text fields
+    for required content (src/components/program-form.tsx:17-112), and SMART goals can finish without
+    forcing any check-ins (src/components/mind/smart-goals-program.tsx:91-190).
+  - Every bespoke Mind program now treats its UI elements as optional: Meditation picks the selected
+    flow or a fallback automatically and just records whether the “heute durchgeführt” box was ticked
+    without blocking completion (src/components/mind/meditation-program.tsx:61-169). Brain Training,
+    Higher Thinking, Visualization, and Emotion Training all send whatever state exists—empty checkbox
+    sets, milestone toggles, selected visuals, or the last log if there is one—without alerts or early
+    returns (src/components/mind/brain-training-program.tsx:63-158, src/components/mind/higher-thinking-
+    program.tsx:62-125, src/components/mind/visualization-training.tsx:32-115, src/components/mind/emotion-
+    training-program.tsx:20-179). Emotion logs also auto-fill a generic label when left blank so no manual
+    validation pop-up appears.
+  - Stack navigation remains the same, but because each constituent card now allows immediate completion,
+    http://localhost:3001/programs/stacks/morgen-programm can advance without tripping custom alerts.
+
+  Tests: npm run lint
+
+  Next steps: 1) Reload a few program cards (e.g., Morgen Programm stack, Meditation, Visualization) and
+  confirm you can click “Programm abschließen”/“Weiter” without ever touching fields. 2) Run a quick XP
+  booking flow to verify responses persist as expected even when inputs are skipped.
+
+
+─ Worked for 8m 09s ────────────────────────────────────────────────────────────────────────────────────────
+
+• Changes
+
+  - Program stacks now register an auto-submit handler per card and trigger it from the lone “Weiter”
+    button, so XP booking runs before advancing and the button disables while a submission is in flight
+    (src/components/program-stack-runner.tsx:1).
+  - The completion context exposes autoSubmitEnabled plus a registrar, and a reusable useAutoProgramSubmit
+    hook wires components into that contract so stack mode can hide local CTAs while standalone runs behave
+    as before (src/contexts/program-completion-context.tsx:1, src/hooks/use-auto-program-submit.ts:1).
+  - Both the generic form flow and the blueprint runner register their submit handlers with the hook, then
+    omit their “Programm abschließen” buttons whenever auto-submit is active, relying solely on external
+    navigation (src/components/program-form.tsx:1, src/components/program-runner.tsx:455).
+  - Custom mind modules now follow the same pattern—Incantations, Day Planning (and similarly Brain
+    Training, Higher Thinking, Visualization, Emotion, Meditation, Smart Goals) drop any “Pflicht”-style
+    alerts, register their completion handlers, and only render CTA buttons outside of stack usage (src/
+    components/mind/incantations-program.tsx:1, src/components/mind/day-planning-program.tsx:20).
+
+  Tests
+
+  - npm run lint
+
+  Next steps
+
+  1. Walk through http://localhost:3001/programs/stacks/morgen-programm and confirm each card auto-books XP
+     when pressing Weiter.
+  2. Spot-check a few API records (e.g., Incantations, Day Planning) to ensure submissions still persist as
+     expected when skipping inputs.
+
+
+
+• Wake Up Feature
+
+  - Built a dedicated Wake Up checklist experience that mirrors the Day Planning flow: users toggle the
+    five required steps, submit to /api/program-runs, and instantly see timestamped history entries; auto-
+    submit, completion overrides, and safe HTML logging are all wired inside src/components/mind/wake-up-
+    program.tsx:12-301.
+  - Registered the new renderer so visiting the Wake Up slug uses the custom UI (src/components/program-
+    content.tsx:13-40) and exposed a Prisma-backed journal endpoint to fetch/store the log entries at /api/
+    programs/wake-up/logs (src/app/api/programs/wake-up/logs/route.ts:1-49).
+  - Added the Wake Up program metadata (code, units, exercises) to the in-memory catalog for both the app
+    and Prisma seeding (src/lib/data.ts:364-413) and mirrored those changes in the SQL manual inserts so
+    environments seeded via SQL stay consistent (seed-data/manual-inserts.sql:2-88).
+  - Tests: npm run lint
+
+  SQL note: the manual seed script changed, but I did not execute the VPS update procedure—please
+  follow .ssh/Konzept/Anleitungen/DB_Integration_VPS_Migration.md to apply it to your database.
+
+  Next steps:
+
+  1. Run the SQL update procedure so the Wake Up program exists in the live DB.
+  2. Smoke-test the Wake Up page in the browser to confirm checklist state, auto-submit, and log persistence
+     behave as expected.
+
+
+─ Worked for 1m 14s ─────────────────────────────────────────────────────────────────────────────────────
+
+• SMART Ziele now show each goal’s Erfolgslog history inline just like the Morgensport tracker.
+
+  - src/components/mind/smart-goals-program.tsx:161-195 renders the new GoalLogs block right below each
+    Erfolgslog textarea, giving users a “Verlauf anzeigen (n)” toggle that mirrors the Morgen Sport UX
+    while keeping the existing modal logs button untouched.
+  - src/components/mind/smart-goals-program.tsx:252-283 adds the reusable GoalLogs component, reusing
+    the details/summary pattern to list timestamped check-ins (progress percent plus optional assessment
+    text) or a friendly empty state.
+
+  Tests not run (not requested). Consider reloading http://localhost:3001/programs/ziele-smart to verify
+  the new collapsible log view renders and expands as expected.
+
+
+─ Worked for 1m 04s ─────────────────────────────────────────────────────────────────────────────────────
+
+• - Built a focusHistory feed from the existing Day Planning journal entries so every render knows the
+    latest “Fokus” text plus timestamp (src/components/mind/day-planning-program.tsx:48-56).
+  - Placed a collapsible Fokus Verlauf (n) block directly under the “Was ist das Wichtigste heute?”
+    textarea; it reuses the same details/summary UX and surfaces each stored entry while showing a
+    loading/empty state (src/components/mind/day-planning-program.tsx:295-302).
+  - Added the FocusLogs, extractFocusText, and decodeHtml helpers to display the dropdown contents
+    and safely parse the stored HTML for focus-only snippets (src/components/mind/day-planning-
+    program.tsx:520-585).
+
+  Tests not run (not requested). Suggestion: 1) Reload http://localhost:3001/programs/ziele-smart
+  and .../day-planning to confirm the new dropdowns populate with your historical inputs.
+
+
+
+
+─────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• State Controll now renders all sliders in one table and records every submission into a collapsible
+  log, backed by a new journal endpoint.
+
+  - src/components/program-runner.tsx:165-254 adds the isStateControl switch, keeps slider
+  responses in memory, fetches journal data via refreshStateControlLogs, and produces HTML summaries
+  (buildStateControlSummary) whenever the program run posts to /api/program-runs.
+  - src/components/program-runner.tsx:600-626 posts the generated summary to /api/programs/state-
+  controll/logs after a successful submission and refreshes the local history so the UI updates
+  immediately.
+  - src/components/program-runner.tsx:700-876 replaces the old step-by-step card with StateControlTable
+  when slug state-controll is active; all states stack vertically in a two-column table, each with its
+  own slider and visible numeric value, and the section embeds a “Verlauf anzeigen (n)” details block
+  that reuses the same styling as the other logs plus a dedicated continue button that advances to the
+  quality phase.
+  - src/components/program-runner.tsx:1166-1260 defines StateControlTable and StateControlLogs, which
+  render the table plus the expandable log list using the shared details/summary pattern, so every stored
+  entry (with timestamp and HTML content) appears right below the inputs.
+  - src/app/api/programs/state-controll/logs/route.ts:1-43 introduces the GET/POST endpoint that
+  upserts journal-state-controll and saves/retrieves the rendered HTML entries, mirroring the existing
+  Morgensport/Day Planning log services.
+
+  Checked the repo for separate “Admin Bereich” settings tied to State Controll and found none, so no
+  admin adjustments were required. Database schema stays untouched; the only persistence change is the
+  new journal (journal-state-controll) populated through the API. Tests not run (not requested).
+
+
+─ Worked for 3m 36s ─────────────────────────────────────────────────────────────────────────────────────
+
+• State Controll now lives on one compact page: the timer UI is gone, sliders sit in a single table, and
+  every submission records a collapsible “Verlauf” entry backed by a new journal endpoint.
+
+  - src/components/program-runner.tsx:180-212 detects the State Controll program and keeps the whole
+    session on the first page by disabling the quality/results/xp sections and related navigation once
+    that slug is active.
+  - src/components/program-runner.tsx:348-405, 556-652 drops the old timer logic, so the familiar “00:00
+    · Start/Pause” controls disappear for all programs and the non-State steps keep only their inputs/
+    navigation.
+  - src/components/program-runner.tsx:560-648 shows State Controll runs entirely through the new
+    StateControlTable, so the inputs and the collapsible log are the full page; clicking “Programm
+    abschließen” calls the normal submit flow without ever leaving this view.
+  - src/components/program-runner.tsx:1166-1260 implements the table + log presentation, reusing the
+    Morning Sport dropdown styling and wiring the submit button so it’s hidden when auto-submit is
+    active.
+  - src/app/api/programs/state-controll/logs/route.ts:1-49 adds the GET/POST API to read/write journal
+    entries (journal id journal-state-controll), mirroring the existing Morgensport/Day Planning log
+    infrastructure.
+
+  Admin panel: no separate configuration surfaced for State Controll, so nothing additional was required
+  there. Database: schema untouched; only a new journal id is written by the API when entries are stored.
+
+  Tests not run (not requested).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ Worked for 3m 34s ─────────────────────────────────────────────────────────────────────────────────────
+
+• Program screens now behave as single cards: every standalone program shows all inputs plus the submit
+  action on one interface, while only program stacks keep the multi-step flow inside the stack runner.
+
+  - src/components/program-runner.tsx:94-230 was rebuilt so the runner just tracks raw step responses,
+    optional draft data, and the two log feeds (Morgensport + State Controll). Submitting now directly
+    posts the consolidated payload and, when needed, appends journal entries without any intermediate
+    “Fortschritt / Quality / Result” views.
+  - src/components/program-runner.tsx:339-420 renders either the one-shot list of ritual steps (with
+    the familiar Morgensport log dropdown inline) or the dedicated State Control table, removing timers,
+    progress pills, and multi-page navigation.
+  - src/components/program-runner.tsx:1166-1260 keeps the State Control slider table + collapsible
+    history but now wires the finish button straight to the shared submit handler when auto-submit isn’t
+    provided, so the same single-page UX covers both normal cards and stack-driven runs.
+
+  No database/schema updates were needed. Tests not run (not requested); please reload an individual
+  program (e.g. /programs/ziele-smart) and a stack flow to confirm the simplified UI and stack sequencing
+  behave as expected.
+
+
+
+─ Worked for 9m 08s ─────────────────────────────────────────────────────────────────────────────────────
+
+• Performance Checklist
+
+  - Added a full custom runner for the new checklist program so users can rate the seven areas in a 5-
+    step radio table, auto-submit, and log entries just like “Morning Sport” (src/components/mind/
+    performance-checklist-program.tsx:1, src/components/program-content.tsx:15). The component posts
+    ProgramRun payloads, stores HTML summaries, shows averages, and exposes the historical log fed by the
+    new /api/programs/performance-checklist/logs endpoint (src/app/api/programs/performance-checklist/
+    logs/route.ts:1).
+  - Introduced dedicated CRUD APIs and persistence for the checklist rows via Prisma (src/pages/
+    schema.prisma:445, prisma/migrations/20251217090000_performance_checklist_items/migration.sql),
+    a typed model (src/lib/types.ts:256), default seeds (src/lib/mind-data.ts:27, prisma/seed.ts:16,
+    prisma/seed.ts:108), and wiring in src/lib/data.ts:524 so the new PC1 program is available across the
+    app plus in the SQL seed file (seed-data/manual-inserts.sql:24, seed-data/manual-inserts.sql:67-73).
+
+  Admin & XP Center
+
+  - The Cards accordion now includes a “Performance Checklist” module to add, edit, reorder, and
+    remove checklist items so the table can be managed without code changes (src/components/admin-
+    panels.tsx:1039-1135). State, handlers, and order persistence follow existing visual/goals patterns.
+  - XP Center gained a dedicated block for the PC1 card, making it easy to tweak its XP reward
+    independently while keeping the global list below (src/components/admin-panels.tsx:1639-1673).
+
+  APIs & Logging
+
+  - Added /api/mind/performance-checklist for checklist CRUD (GET/POST/PUT/PATCH/DELETE) so both the
+    admin and program UI stay in sync (src/app/api/mind/performance-checklist/route.ts:1).
+  - Added /api/programs/performance-checklist/logs which upserts a “Performance Checklist Log” journal
+    and records entries exactly like the Morgensport flow (src/app/api/programs/performance-checklist/
+    logs/route.ts:1).
+
+  SQL Notice
+
+  - A new Prisma model/table (PerformanceChecklistItem) requires deploying the migration in prisma/
+    migrations/20251217090000_performance_checklist_items and reseeding to pull in the default rows.
+    Follow the steps in .ssh/Konzept/Anleitungen/DB_Integration_VPS_Migration.md (docker compose down/
+    up, then npx prisma migrate deploy --schema src/pages/schema.prisma, optionally reseed) against your
+    target environment.
+
+  Testing
+
+  - Not run (not requested). Please run npm run lint, python -m pytest System/tests (if applicable), and
+    a manual check of the new checklist flow once migrations are applied.
+
+  Next steps
+
+  1. Apply the new migration/seed in your deployment environment per the DB integration guide, then
+     restart the services.
+  2. In the UI, create a test checklist entry via the new Cards module, complete the PC1 program, and
+     confirm the XP update plus log rendering behave as expected in both the runner and admin history.
+
+
+
+─ Worked for 44s ────────────────────────────────────────────────────────────────────────────────────────
+
+• - Added a database-missing fallback for /api/mind/performance-checklist: GET now serves the default
+    seeds instead of erroring when the PerformanceChecklistItem table isn’t deployed, and POST/PUT/
+    PATCH/DELETE return a descriptive 503 with migration hints instead of crashing (src/app/api/mind/
+    performance-checklist/route.ts:1). React screens will no longer show repeated 500s; they can read the
+    fallback data until the migration runs.
+  - These responses also log clearly so you know whether you’re hitting the fallback or a real DB row
+    set.
+
+  Next steps
+
+  1. Deploy the new migration (npx prisma migrate deploy --schema src/pages/schema.prisma) so checklist
+     changes persist.
+  2. Re-test the Performance Checklist runner/Admin module; the UI should load immediately, and edits
+     will only succeed once the migration is applied.
+
+
+─ Worked for 1m 41s ─────────────────────────────────────────────────────────────────────────────────────
+
+• - Wrapped the performance checklist API in proper guard rails so it no longer crashes when Prisma
+    wasn’t regenerated for the new model. The route now checks if the performanceChecklistItem delegate
+    exists before touching it, serves the default seed data as a fallback on GET, and returns clear 503
+    guidance for POST/PUT/PATCH/DELETE along with an x-dais-performance-warning header (src/app/api/mind/
+    performance-checklist/route.ts:5). This eliminates the 500s you saw in both the checklist runner and
+    the Admin panel and tells you exactly which Prisma commands to run when the client/table is missing.
+
+  Next steps
+
+  1. Regenerate Prisma after pulling the schema change (npx prisma generate --schema src/pages/
+     schema.prisma) and redeploy the migration (docker compose exec web npx prisma migrate deploy
+     --schema src/pages/schema.prisma) so the model becomes available.
+  2. Re-run the Admin Performance Checklist module and the PC1 program; both should now load seeds
+     immediately, and once the Prisma client/table exist, CRUD requests will persist without warnings.
+
+
+─ Worked for 29s ────────────────────────────────────────────────────────────────────────────────────────
+
+• - Ø Score card now stands out: the header section renders two large stat tiles—one for the current
+    average (big bold digits with gradient background) and, when history exists, one for the log-based
+    average with details about how many runs were included (src/components/mind/performance-checklist-
+    program.tsx:38).
+  - Added a live analyzer that parses each log entry’s HTML table, aggregates every tracked value, and
+    shows a rolling “Live Ø Score” both next to the tiles and in the Performance Log header. This runs
+    on every load as soon as the logs arrive, so the historical average updates automatically (src/
+    components/mind/performance-checklist-program.tsx:108, helper functions at the bottom).
+
+  No further steps required—just reload the checklist page to see the enlarged Ø score and the live
+  historical average sourced from existing log entries.
+
+
+

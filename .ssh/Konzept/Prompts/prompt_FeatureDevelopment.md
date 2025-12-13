@@ -1,7 +1,79 @@
+# Änderung
 Führe folgende Änderungen durch. Prüfe dabei auch, ob im Admin Bereich zu diesem ein Einstellungsbereich gibt, und passe ggf. auch dort notwendige Inhalte an. Falls für die Anpassung Datenbank Änderungen notwendig sind, fasse kurz zusammen was du geändert hast.
 
 
+# Neu Erstellung
+Erstelle folgedes neues Feature. Wenn du dafür neue SQL Anpassungen machst, gebe einen Hinweis bei deinem Output und falls mögliche führe die SQL Updates eigenständig durch (Anleitung: .ssh/Konzept/Anleitungen/DB_Integration_VPS_Migration.md). Nutze für die Entwicklung immer zuerst bereits implementierte Code strukturen und funktionen, und nur wenn du für die umsetzung dieses neues Features neue Funktionen brauchst entwickele sie neu. füge auch ein neues modul in "Cards" und "XP Center" ein um dieses neue Feature anpassen und ändern zu können.
+
+
 ** Status: Offen **
+# Bereich:
+Cheklist
+
+## Anforderungen:
+- Erstelle eine Checklist Tabelle für folgende Punkte mit einem 5 Stufen Radio Button reihe:
+    - State
+    - Körperhaltung
+    - Energy
+    - Gesunde Ernährung
+    - Fokus
+    - Konzentration
+    - Disziplin
+- Jede eingabe soll wie im "Morning Sport absolviert" Verlauf geloggt werden (wende die gleichen codes an)
+
+# Vorlage #######################################################################
+
+## Änderungen ###################################################################
+
+** Status: Offen **
+# Bereich:
+
+## Änderungen:
+- 
+
+## Neu Erstellungen #############################################################
+
+** Status: Offen **
+# Bereich:
+
+## Anforderungen:
+- 
+
+# ###############################################################################
+
+
+
+** Status: Fertig **
+# Bereich:
+State Controll
+
+## Änderungen:
+- Alle States (Bsp. LIGHT) sollen untereinander in einer tabelle stehen. jedes der states soll einen eigenen schiebregler / slider haben.
+- bei jeder eingabe soll unterhalb eine speicherung (zum ausklappen) entstehen (nutze den gleichen code).
+- entferne noch die timer (00:00 / Start / Pause)
+- entferne die weiteren seiten nach der eingabe (bsp. Fortschritt: 1/7
+LOVE LIGHT HERO LEADER INNOVATOR POWER HUMAN IQ SOURCE Quality Ratings Fokus: 6 Tiefe: 6 Zufriedenheit: 6 Kriterien Programm vollständig durchgezogen Mind mindestens 70% Fokus Realistisch Nicht realistisch State Check nach dem Programm (-) Regel-Check erfüllt Result & Reflektion Was habe ich konkret erreicht? Was hat sich an meinem State oder Verhalten verändert? Was nehme ich mit? XP Vorschau Basis XP: 500 · Durchschnittsqualität: 6.0 mind: 100%), sodass die eingaben die auf seite 1 davon sind die ganze programm seite ausmachen. 
+
+---
+
+
+
+** Status: Fertig **
+# Bereich:
+Wake Up Programm
+
+## Anforderungen:
+- Eine Chekliste mit folgenden Inhalten:
+    - Earth Love Meditation
+    - Dankbarkeits Meditation
+    - Visualisierung
+    - Power Health Shot
+    - Pump Up Session
+- Die Eingaben sollen wie bei "Verlauf - Day Planning Log" bei "Day Planning" immer gespeichert werden mit zeitstempel
+
+
+
+** Status: Fertig **
 # Bereich:
 MM5 — Day Planning
 ## Änderungen:
@@ -78,15 +150,6 @@ Nicht realistisch
 - entferne auch die bereiche "Result & Reflektion" & "XP Vorschau"
 
 Implementiere noch, dass unterhalb des bereichs "Morning Sport absolviert" ein dropdown erstellt wiird, den man anklicken kann und die durchgeführten MS1 — Morgensport eingaben sehen kann. die eingaben sollen kurz zusammengefasst bei "Programm abschließen" gespeichert werden. die eingaben sollen mit einem zeitstempel gespeichert werden (nutze zur umsetzung bereits vorhandene Code Strukturen wie bei Anforderungen oder Journals)
-
-
-```
-** Status: Offen **
-# Bereich:
-
-## Änderungen:
-- 
-```
 
 
 ** Status: Fertig **
