@@ -1,3 +1,10 @@
+# Version 2
+
+  1. sudo docker compose exec web npx prisma migrate deploy --schema src/pages/schema.prisma
+  2. sudo docker compose exec web npm run db:seed
+
+
+# Version 1
 - Purpose: regenerate the Prisma client after schema changes and apply migrations so the DB structure
     matches the code.
 

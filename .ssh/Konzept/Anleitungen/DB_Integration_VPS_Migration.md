@@ -15,3 +15,13 @@ sudo docker compose exec web npx prisma migrate deploy --schema src/pages/schema
 
 (Optional: 6. Seed einspielen)
   sudo docker compose exec web sh -c "npx prisma migrate deploy --schema src/pages/schema.prisma && npm run db:seed"
+
+# Schema implementieren
+  sudo docker compose exec web sh -c "npx prisma generate --schema src/pages/schema.prisma"
+
+
+# Migration
+
+sudo docker compose exec web npx prisma migrate deploy --schema src/pages/schema.prisma
+
+Damit führst du prisma migrate deploy direkt im web‑Container aus und stellst sicher, dass dort derselbe Schema‑Stand wie auf dem Host aktiv ist.

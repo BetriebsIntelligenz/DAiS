@@ -6,7 +6,54 @@ Führe folgende Änderungen durch. Prüfe dabei auch, ob im Admin Bereich zu die
 Erstelle folgedes neues Feature. Wenn du dafür neue SQL Anpassungen machst, gebe einen Hinweis bei deinem Output und falls mögliche führe die SQL Updates eigenständig durch (Anleitung: .ssh/Konzept/Anleitungen/DB_Integration_VPS_Migration.md). Nutze für die Entwicklung immer zuerst bereits implementierte Code strukturen und funktionen, und nur wenn du für die umsetzung dieses neues Features neue Funktionen brauchst entwickele sie neu. füge auch ein neues modul in "Cards" und "XP Center" ein um dieses neue Feature anpassen und ändern zu können.
 
 
+
 ** Status: Offen **
+# Bereich:
+Haushalt
+
+# Kategorie:
+- ENVIRONMENT
+
+## Anforderungen:
+Es soll möglich sein Karten anzulegen für wochentage. dabei soll es eine liste von aufgaben geben die man den karten zuordnen kann und die immer zum abhacken sind. implementiere auch eine wochen ansicht funktion, wo im wochenstrahl (montag - sonntag) angezeigt wird wann welche "Haushalts" Karte gespeichert wurde.
+    - 1.Aufgeräumt
+    - 2.Geschirr in Spühlmaschine getan
+    - 3.Wäsche gewaschen
+    - 4.Boden gewischt
+    - 5.Müll entsorgt
+    - 6.Handwerkliche Aufgabe erledigt
+    - 7.Essen zubereitet
+    - 8.Einkaufen gewesen
+- Jede eingabe soll wie im "Morning Sport absolviert" Verlauf geloggt werden (wende die gleichen codes an)
+- Im Admin Bereich soll volle bearbeitung und anpassung dieses features möglich sein.
+
+
+
+# Vorlage #######################################################################
+
+## Änderungen ###################################################################
+
+** Status: Offen **
+# Bereich:
+
+# Kategorie:
+- 
+
+## Änderungen:
+- 
+
+## Neu Erstellungen #############################################################
+
+** Status: Offen **
+# Bereich:
+
+## Anforderungen:
+- 
+
+# ###############################################################################
+
+
+** Status: Fertig **
 # Bereich:
 Cheklist
 
@@ -21,25 +68,6 @@ Cheklist
     - Disziplin
 - Jede eingabe soll wie im "Morning Sport absolviert" Verlauf geloggt werden (wende die gleichen codes an)
 
-# Vorlage #######################################################################
-
-## Änderungen ###################################################################
-
-** Status: Offen **
-# Bereich:
-
-## Änderungen:
-- 
-
-## Neu Erstellungen #############################################################
-
-** Status: Offen **
-# Bereich:
-
-## Anforderungen:
-- 
-
-# ###############################################################################
 
 
 
