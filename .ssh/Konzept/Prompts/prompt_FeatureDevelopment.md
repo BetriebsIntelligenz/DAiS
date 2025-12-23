@@ -1,25 +1,21 @@
 # Änderung
 Führe folgende Änderungen durch. Prüfe dabei auch, ob im Admin Bereich zu diesem ein Einstellungsbereich gibt, und passe ggf. auch dort notwendige Inhalte an. Falls für die Anpassung Datenbank Änderungen notwendig sind, fasse kurz zusammen was du geändert hast.
 
-** Status: Offen **
-# Bereich:
-Daily Human Checklist
-
-
-# Kategorie:
-- Human
-
-## Änderungen:
-- Im Admin Bereich soll man Personen angelegt werden können mit Auswahl wie (Familie, Freund, Kollege, Business Partner, Network) via dropdown vergeben können
-- Es soll in den Admin Bereich soll man dann je erstellter Person täglich / wöchentlich aufgaben zu ordnen können wie (WhatsApp Nachricht, Anruf, E-Mail, Treffen, Video Call)
-- Bei der Karten Ansicht (http://localhost:3001/programs/daily-checklist-human) soll man dann aktiviäten tracken können wie (WhatsApp Nachricht, Anruf, E-Mail, Treffen, Video Call). zu jede eingabe soll ein log / verlauf (nutze bereits vorhanden code strukturen im code um die implementierung zu vereinfachen) pro Person erstellt werden den man in dieser anischt mittels einem dropdown ansehen kann.
-- auf der karten ansicht soll man auch eine live statistik sehen können von der kontakt verteilung je person.
-- Alle Anpassungen des systems sollen im admin bereich möglich sein.
 
 
 # Neu Erstellung
 Erstelle folgedes neues Feature. Wenn du dafür neue SQL Anpassungen machst, gebe einen Hinweis bei deinem Output und falls mögliche führe die SQL Updates eigenständig durch (Anleitung: .ssh/Konzept/Anleitungen/DB_Integration_VPS_Migration.md). Nutze für die Entwicklung immer zuerst bereits implementierte Code strukturen und funktionen, und nur wenn du für die umsetzung dieses neues Features neue Funktionen brauchst entwickele sie neu. füge auch ein neues modul in "Cards" und "XP Center" ein um dieses neue Feature anpassen und ändern zu können.
 
+
+** Status: Offen **
+# Bereich: Mind
+
+Name: Lesen
+
+## Anforderungen:
+- Der bereich soll man lese fortschritt eintragen können, mit gelesenen seiten anzahl und buch, dass aus einem dropdown auswählbar ist.
+- der dropdown der bücher liste kann im admin bereich immer aktualisiert werden um neue bücher und auch bücher aus der liste zu löschen. bei änpassung soll diese änderung direkt in der karte ersichtlich sein.
+- in der karten ansicht soll man einen log sehen können mit den einträgen (datum und uhrzeit) und seitenanzahl. nutze für die implementierung bereits vorhandene code strukturen (logging bereits in "http://localhost:3001/programs/daily-checklist-body", "verlauf anzeigen" implementiert. nur bei lese log soll der dropdown gleich geöffnet anzeigt werden, damit man gleich den log sehen kann)
 
 
 # Vorlage #######################################################################
@@ -44,6 +40,23 @@ Erstelle folgedes neues Feature. Wenn du dafür neue SQL Anpassungen machst, geb
 - 
 
 # ###############################################################################
+
+
+
+** Status: Fertig **
+# Bereich:
+Daily Human Checklist
+
+
+# Kategorie:
+- Human
+
+## Änderungen:
+- Im Admin Bereich soll man Personen angelegt werden können mit Auswahl wie (Familie, Freund, Kollege, Business Partner, Network) via dropdown vergeben können
+- Es soll in den Admin Bereich soll man dann je erstellter Person täglich / wöchentlich aufgaben zu ordnen können wie (WhatsApp Nachricht, Anruf, E-Mail, Treffen, Video Call)
+- Bei der Karten Ansicht (http://localhost:3001/programs/daily-checklist-human) soll man dann aktiviäten tracken können wie (WhatsApp Nachricht, Anruf, E-Mail, Treffen, Video Call). zu jede eingabe soll ein log / verlauf (nutze bereits vorhanden code strukturen im code um die implementierung zu vereinfachen) pro Person erstellt werden den man in dieser anischt mittels einem dropdown ansehen kann.
+- auf der karten ansicht soll man auch eine live statistik sehen können von der kontakt verteilung je person.
+- Alle Anpassungen des systems sollen im admin bereich möglich sein.
 
 
 
