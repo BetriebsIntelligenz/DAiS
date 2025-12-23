@@ -13,7 +13,7 @@ Hier der Ablauf, um deinen aktuellen Stand ins Remote https://github.com/Betrieb
 
   - git checkout -b feature/anforderungen (wenn du einen neuen Branch willst)
   - git add .
-  - git commit -m "feat: add requirements kanban with xp tracking"
+  - git commit -m "feat: Morgensport"
 
   4. Pushen:
 

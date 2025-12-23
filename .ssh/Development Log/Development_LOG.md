@@ -3457,3 +3457,48 @@ report the issue.
   Tests: npm run lint
 
 
+
+
+
+─ Worked for 12m 58s ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• Updates
+
+  - Added the Human Contacts data model (new enums/relations in src/pages/schema.prisma:91 and models at src/pages/schema.prisma:543) plus strongly typed DTOs (src/lib/types.ts:446) so
+    persons, assignments, logs and stats can be stored and consumed consistently across the app.
+  - Seeded and shared catalog metadata for the new domain (src/lib/human.ts:1, src/lib/human-data.ts:1, prisma/seed.ts:291) and centralized DB access/helpers/fallback handling in src/server/
+    human-contact-service.ts:1, which powers the new APIs.
+  - Exposed CRUD + assignment endpoints for admins and logging endpoints for the cards (src/app/api/human/contacts/route.ts:1, src/app/api/human/contacts/logs/route.ts:1), including
+    validation, fallback seeds, and per-person stat recalculation.
+  - Extended the admin dashboard with contact creation/editing, dropdown relation selection, assignment toggles, stats readout, and error handling (src/components/admin-panels.tsx:109 for
+    state, src/components/admin-panels.tsx:1323 for the new “Daily Human Checklist” accordion section).
+  - Implemented the dedicated program view so /programs/daily-checklist-human now renders interactive cards with activity buttons, note capture, per-person log dropdowns, and live stats (src/
+    components/human/daily-human-checklist.tsx:1, wired up via src/components/program-content.tsx:17).
+
+  DB Changes
+
+  - Added enums HumanContactRelation, HumanContactActivity, HumanContactCadence, new tables HumanContactPerson, HumanContactAssignment, HumanContactLog, plus a User.humanContactLogs relation
+    (src/pages/schema.prisma:91-579). Seed data and migrations now initialize a few default contacts/assignments (prisma/seed.ts:291).
+
+  Tests
+
+  - npm run lint (passes; one existing warning remains in src/components/program-runner.tsx:98 from before these changes).
+
+
+
+
+
+
+
+─ Worked for 1m 09s ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• Timeline feed now queries /api/timeline for the logged-in profile, so completed programs/cards are logged correctly instead of always pulling the demo@dais.app
+  account.
+
+  - src/components/timeline-feed.tsx:3-51 imports useAuth, tracks user?.email in the polling effect, resets the loading state on user changes, and appends the encoded
+    email to every fetch—aligning the standalone timeline page with the score overview logic.
+
+  Tests not run (not requested). Next step: 1) Open /timeline, complete a card/program, and confirm the activity list refreshes automatically. 2) Run npm run lint/npm
+  test if you want automated verification.
+
+
