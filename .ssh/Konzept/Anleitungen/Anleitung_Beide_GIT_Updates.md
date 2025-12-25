@@ -20,19 +20,29 @@ git commit -m "chore: local snapshot"
 ```
 Legt einen Commit mit den gestagten Änderungen an. Passe die Nachricht an, falls du einen spezifischeren Kontext dokumentieren möchtest.
 
-## 4. (Optional) Remote-Ziel bestätigen
+## 4. (Optional) Remotes bestätigen
 ```bash
 git remote -v
 ```
-Prüfe, ob `origin` auf `git@github.com:BetriebsIntelligenz/DAiS.git` zeigt oder passe den Remote an, bevor du pushst.
+Prüfe, ob `origin` (GitHub) auf `git@github.com:BetriebsIntelligenz/DAiS.git` und `gitlab` auf `git@gitlab.com:BetriebsIntelligenz/DAiS.git` zeigt. Fehlt ein Eintrag, kannst du ihn ergänzen oder korrigieren:
+```bash
+git remote add gitlab git@gitlab.com:BetriebsIntelligenz/DAiS.git
+# bzw. git remote set-url gitlab <korrekte-url>
+```
 
-## 5. Branch nach GitLab/GitHub schieben
+## 5. Branch nach GitHub (origin) pushen
 ```bash
 git push origin feature/gamestyle
 ```
-Überträgt deinen aktuellen Branch (`feature/gamestyle`) samt neuem Commit auf das Remote-Repository. Ersetze den Branch-Namen, wenn du auf einem anderen Branch arbeitest.
+Überträgt deinen aktuellen Branch (`feature/gamestyle`) samt neuem Commit auf GitHub. Ersetze den Branch-Namen, wenn du auf einem anderen Branch arbeitest.
 
-## 6. Erfolg kontrollieren
+## 6. Branch nach GitLab spiegeln (gitlab)
+```bash
+git push gitlab feature/gamestyle
+```
+Synchronisiert denselben Stand mit dem GitLab-Remote. Auch hier ggf. den Branch-Namen anpassen.
+
+## 7. Erfolg kontrollieren
 ```bash
 git status -sb
 ```
