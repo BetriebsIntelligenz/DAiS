@@ -11,6 +11,14 @@ Aktuelle GIT Version deployen (Beide_GIT_Updates.md)
     ```
     git clone https://github.com/BetriebsIntelligenz/DAiS.git
     ```
+    2.1. Branch wechseln
+    ```
+    git checkout feature/gamestyle
+    ```
+    2.2. Pull
+    ```
+    git pull origin feature/gamestyle
+    ```
 3. Docker Compose starten
     ```
     docker compose up --build -d
