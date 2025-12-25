@@ -14,8 +14,12 @@ DAiS Deploy Guide (VPS via SSH)
         (Abmelden/neu anmelden, damit die Docker-Gruppe greift.)
   2. Repo klonen
 
-     git clone https://github.com/BetriebsIntelligenz/DAiS.git
+     ``` git clone https://github.com/BetriebsIntelligenz/DAiS.git ```
      cd DAiS
+
+    # Info !!! Aktuelle Änderungen im gamestyle branch
+    git checkout feature/gamestyle
+    git pull origin feature/gamestyle
 
      (Alternativ via SSH-URL, falls du einen Deploy-Key nutzt.)
   3. Env-Dateien setzen
